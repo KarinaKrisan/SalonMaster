@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, collection, addDoc, query, where, getDocs, Timestamp, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// --- SUAS CHAVES (Configuração do Firebase) ---
+// --- SUAS CHAVES ---
 const firebaseConfig = {
     apiKey: "AIzaSyCICXCU3bgxoVK4kAXncxSWZHAazKFS65s",
     authDomain: "agenda-salao-bbddf.firebaseapp.com",
@@ -12,11 +12,10 @@ const firebaseConfig = {
     measurementId: "G-WGP1LCJN9M"
 };
 
-// Inicializa Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// --- SELEÇÃO DE ELEMENTOS DO DOM ---
+// --- ELEMENTOS ---
 const elements = {
     form: document.getElementById('bookingForm'),
     service: document.getElementById('service'),
@@ -31,10 +30,9 @@ const elements = {
     clientPhone: document.getElementById('clientPhone')
 };
 
-// Define data mínima como hoje
 elements.date.min = new Date().toISOString().split("T")[0];
 
-// --- FUNÇÃO 1: CARREGAR SERVIÇOS DO BANCO ---
+// --- 1. CARREGAR SERVIÇOS ---
 async function loadServices() {
     try {
         const q = query(collection(db, "procedimentos"), orderBy("nome"));
@@ -43,7 +41,7 @@ async function loadServices() {
         elements.service.innerHTML = '<option value="" disabled selected>Selecione uma experiência...</option>';
 
         if (querySnapshot.empty) {
-            console.warn("Nenhum procedimento encontrado.");
+            elements.service.innerHTML = '<option value="">Nenhum serviço disponível</option>';
             return;
         }
 
@@ -55,23 +53,52 @@ async function loadServices() {
             option.setAttribute('data-duration', data.duracao);
             elements.service.appendChild(option);
         });
-
     } catch (error) {
-        console.error("Erro ao carregar serviços:", error);
-        elements.service.innerHTML = '<option value="">Erro ao carregar lista</option>';
+        console.error("Erro serviços:", error);
+        elements.service.innerHTML = '<option value="">Erro ao carregar</option>';
     }
 }
 
-// --- FUNÇÃO 2: VERIFICAR DISPONIBILIDADE ---
+// --- 2. CARREGAR PROFISSIONAIS (NOVO) ---
+async function loadProfessionals() {
+    try {
+        // Ordena por nome para ficar bonito na lista
+        const q = query(collection(db, "profissionais"), orderBy("nome"));
+        const querySnapshot = await getDocs(q);
+        
+        elements.professional.innerHTML = '<option value="" disabled selected>Selecione o especialista...</option>';
+
+        if (querySnapshot.empty) {
+            elements.professional.innerHTML = '<option value="">Nenhum profissional disponível</option>';
+            return;
+        }
+
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const option = document.createElement('option');
+            option.value = doc.id; // O ID do documento é o valor chave
+            // Mostra Nome e Especialidade
+            option.textContent = `${data.nome} - ${data.especialidade}`;
+            // Salvamos o nome limpo num atributo para usar depois se precisar
+            option.setAttribute('data-name', data.nome);
+            elements.professional.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Erro profissionais:", error);
+        elements.professional.innerHTML = '<option value="">Erro ao carregar</option>';
+    }
+}
+
+// --- 3. VERIFICAR DISPONIBILIDADE ---
 async function loadAvailability() {
     const dateVal = elements.date.value;
-    const profVal = elements.professional.value;
+    const profId = elements.professional.value; // Agora usamos o ID do Firebase
     const serviceIndex = elements.service.selectedIndex;
 
     if(serviceIndex === -1) return;
     const serviceOpt = elements.service.options[serviceIndex];
     
-    if (!dateVal || !profVal || !serviceOpt.value) return;
+    if (!dateVal || !profId || !serviceOpt.value) return;
 
     const duration = parseInt(serviceOpt.getAttribute('data-duration'));
     
@@ -80,9 +107,10 @@ async function loadAvailability() {
     elements.selectedTimeInput.value = '';
 
     try {
+        // Busca agendamentos onde o profissionalId seja igual ao selecionado
         const q = query(
             collection(db, "agendamentos"),
-            where("profissional", "==", profVal),
+            where("profissionalId", "==", profId),
             where("data", "==", dateVal)
         );
         
@@ -97,14 +125,14 @@ async function loadAvailability() {
         generateSlots(busyTimes, duration);
 
     } catch (error) {
-        console.error("Erro ao buscar agenda:", error);
+        console.error("Erro agenda:", error);
         elements.msg.innerHTML = `<span class="error">Erro ao verificar horários.</span>`;
     } finally {
         elements.slotsLoader.style.display = 'none';
     }
 }
 
-// --- FUNÇÃO 3: GERAR BOTÕES DE HORÁRIO ---
+// --- 4. GERAR SLOTS ---
 function generateSlots(busyTimes, serviceDuration) {
     const startHour = 9; 
     const endHour = 19; 
@@ -127,7 +155,6 @@ function generateSlots(busyTimes, serviceDuration) {
         const isTooLate = serviceEndTime > endTime;
 
         if (!isBusy && !isTooLate) {
-            // Note o uso de aspas simples escapadas na string template
             slotsHtml += `<button type="button" class="slot-btn" onclick="selectSlot(this, '${timeString}')">${timeString}</button>`;
             hasSlots = true;
         }
@@ -135,19 +162,18 @@ function generateSlots(busyTimes, serviceDuration) {
     }
 
     if (!hasSlots) {
-        elements.slotsGrid.innerHTML = '<p style="grid-column: span 4; color: var(--text-muted); text-align: center; padding: 10px;">Sem horários para este serviço hoje.</p>';
+        elements.slotsGrid.innerHTML = '<p style="grid-column: span 4; color: var(--text-muted); text-align: center; padding: 10px;">Sem horários para este serviço com este profissional hoje.</p>';
     } else {
         elements.slotsGrid.innerHTML = slotsHtml;
     }
 }
 
-// --- FUNÇÃO 4: VERIFICAR COLISÃO ---
+// --- 5. COLISÃO ---
 function checkCollision(slotTime, newDuration, busyList) {
     const timeToMin = (t) => {
         const [h, m] = t.split(':').map(Number);
         return h * 60 + m;
     };
-
     const newStart = timeToMin(slotTime);
     const newEnd = newStart + newDuration;
 
@@ -159,7 +185,7 @@ function checkCollision(slotTime, newDuration, busyList) {
     return false;
 }
 
-// --- FUNÇÃO 5: SALVAR NO BANCO ---
+// --- 6. SALVAR ---
 async function handleFormSubmit(e) {
     e.preventDefault();
     const time = elements.selectedTimeInput.value;
@@ -174,14 +200,21 @@ async function handleFormSubmit(e) {
 
     try {
         const serviceOpt = elements.service.options[elements.service.selectedIndex];
+        const profOpt = elements.professional.options[elements.professional.selectedIndex];
 
         await addDoc(collection(db, "agendamentos"), {
             cliente: elements.clientName.value,
             telefone: elements.clientPhone.value,
-            servico: serviceOpt.text, 
-            servicoId: serviceOpt.value, 
+            
+            // Dados do Serviço
+            servico: serviceOpt.text.split(' (')[0], // Pega só o nome, tira a duração
+            servicoId: serviceOpt.value,
             duracao: parseInt(serviceOpt.getAttribute('data-duration')),
-            profissional: elements.professional.value,
+            
+            // Dados do Profissional
+            profissional: profOpt.getAttribute('data-name'), // Nome legível
+            profissionalId: profOpt.value, // ID do banco (para busca)
+            
             data: elements.date.value,
             hora: time,
             status: 'pendente',
@@ -193,7 +226,9 @@ async function handleFormSubmit(e) {
         elements.slotsGrid.innerHTML = '<div style="grid-column: span 4; text-align: center; color: #555;">Dados resetados.</div>';
         elements.selectedTimeInput.value = '';
         
-        loadServices(); // Recarrega para resetar o select corretamente
+        // Recarrega as listas para resetar os selects visualmente
+        loadServices();
+        loadProfessionals();
 
     } catch (error) {
         console.error(error);
@@ -204,16 +239,19 @@ async function handleFormSubmit(e) {
     }
 }
 
-// --- EXPORTAR FUNÇÕES PARA O HTML ---
-// Como é um módulo, precisamos explicitar o que o HTML pode ver (para o onclick funcionar)
+// Helpers
 window.selectSlot = (btn, time) => {
     document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
     btn.classList.add('selected');
     elements.selectedTimeInput.value = time;
 };
 
-// --- LISTENERS (INICIALIZAÇÃO) ---
-window.addEventListener('DOMContentLoaded', loadServices);
+// Iniciar
+window.addEventListener('DOMContentLoaded', () => {
+    loadServices();
+    loadProfessionals();
+});
+
 elements.date.addEventListener('change', loadAvailability);
 elements.professional.addEventListener('change', loadAvailability);
 elements.service.addEventListener('change', loadAvailability);
