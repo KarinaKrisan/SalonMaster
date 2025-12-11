@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SalonMaster - Agenda Online</title>
+    <title>SalonMaster - Agendamento Inteligente</title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💇‍♀️</text></svg>">
 </head>
@@ -12,58 +12,59 @@
     <div class="container">
         <header>
             <h1>SalonMaster</h1>
-            <p>Seu estilo, nosso compromisso. Agende abaixo.</p>
+            <p>Agende seu momento de beleza.</p>
         </header>
 
         <section class="form-section">
             <form id="bookingForm">
                 <div class="input-group">
                     <label>Seu Nome</label>
-                    <input type="text" id="name" placeholder="Ex: Ana Silva" required>
+                    <input type="text" id="name" placeholder="Como gosta de ser chamado(a)" required>
                 </div>
                 
                 <div class="input-group">
                     <label>WhatsApp</label>
                     <input type="tel" id="phone" placeholder="(11) 99999-9999" required>
                 </div>
-                
+
+                <hr class="divider">
+
                 <div class="input-group">
-                    <label>Serviço</label>
-                    <select id="service" required>
-                        <option value="" disabled selected>Selecione...</option>
-                        <option value="Corte Feminino">Corte Feminino</option>
-                        <option value="Corte Masculino">Corte Masculino</option>
-                        <option value="Manicure">Manicure</option>
-                        <option value="Pedicure">Pedicure</option>
-                        <option value="Hidratação">Hidratação Profunda</option>
-                        <option value="Coloração">Coloração/Mechas</option>
+                    <label>Escolha o Profissional</label>
+                    <select id="professional" required>
+                        <option value="" disabled selected>Selecione o profissional...</option>
+                        <option value="Ana">Ana (Especialista em Cortes)</option>
+                        <option value="Carlos">Carlos (Colorimetria)</option>
+                        <option value="Bia">Bia (Manicure/Pedicure)</option>
                     </select>
                 </div>
-
-                <div class="date-time-group">
-                    <div class="input-group">
-                        <label>Data</label>
-                        <input type="date" id="date" required>
-                    </div>
-                    <div class="input-group">
-                        <label>Horário</label>
-                        <input type="time" id="time" required min="09:00" max="19:00" step="1800"> 
-                        </div>
+                
+                <div class="input-group">
+                    <label>Escolha o Serviço</label>
+                    <select id="service" required>
+                        <option value="" disabled selected>Selecione o serviço...</option>
+                        </select>
+                    <small id="serviceDurationDisplay" style="color: var(--primary-color); display:none;"></small>
                 </div>
 
-                <button type="submit" id="submitBtn">Confirmar Agendamento</button>
+                <div class="input-group">
+                    <label>Data Desejada</label>
+                    <input type="date" id="date" required>
+                </div>
+
+                <div id="slotsSection" class="slots-section" style="display:none;">
+                    <label>Horários Disponíveis (Toque para selecionar)</label>
+                    <div id="slotsContainer" class="slots-grid">
+                        </div>
+                    <input type="hidden" id="selectedTime" required>
+                </div>
+
+                <button type="submit" id="submitBtn" disabled>Confirmar Agendamento</button>
             </form>
         </section>
-
-        <hr>
-
-        <section class="appointments-section">
-            <h2>Próximos Horários Ocupados</h2>
-            <div id="appointmentsList" class="cards-container">
-                <p class="loading">Carregando agenda...</p>
-            </div>
-        </section>
     </div>
+
+    <div id="toast" class="toast">Agendamento realizado!</div>
 
     <script type="module" src="app.js"></script>
 </body>
