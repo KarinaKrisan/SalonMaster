@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumière | Painel Administrativo</title>
+    
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* CSS ESPECÍFICO DO ADMIN */
+        
+        /* Tela de Login */
+        #login-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-dark);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        /* Dashboard */
+        .dashboard-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .dashboard-controls input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .dashboard-controls button {
+            flex: 1;
+            margin-top: 0;
+            background: #333;
+            color: white;
+            border: 1px solid #444;
+        }
+        
+        .dashboard-controls button:hover {
+            background: var(--gold-primary);
+            color: #121212;
+        }
+
+        /* Lista de Agendamentos (Cards) */
+        .appointments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .appt-card {
+            background: #252525;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid var(--gold-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+
+        .appt-card:hover {
+            transform: translateX(5px);
+            background: #2a2a2a;
+        }
+
+        .appt-info h3 {
+            color: var(--text-main);
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .appt-info p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+        }
+
+        .appt-info .highlight {
+            color: var(--gold-primary);
+            font-weight: bold;
+        }
+
+        .btn-delete {
+            background: transparent;
+            border: 1px solid var(--error);
+            color: var(--error);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .btn-delete:hover {
+            background: var(--error);
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 40px;
+            border: 1px dashed #333;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-overlay">
+        <div class="container" style="max-width: 400px; text-align: center;">
+            <h2 style="color: var(--gold-primary); margin-bottom: 20px;">Acesso Restrito</h2>
+            <input type="password" id="adminPassword" placeholder="Digite a senha do admin" style="margin-bottom: 15px; text-align: center;">
+            <button class="cta-btn" onclick="checkLogin()">Entrar</button>
+            <p id="loginError" class="error" style="margin-top: 10px;"></p>
+        </div>
+    </div>
+
+    <div class="container" id="adminPanel" style="display: none; max-width: 800px;">
+        <header style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="text-align: left;">
+                <h1>Gestão</h1>
+                <p>Agenda Lumière</p>
+            </div>
+            <button onclick="logout()" style="background:none; border:none; color: var(--text-muted); cursor: pointer;"><i class="fas fa-sign-out-alt"></i> Sair</button>
+        </header>
+
+        <div class="dashboard-controls">
+            <input type="date" id="filterDate" onchange="loadAppointments()">
+            
+            <button class="cta-btn" onclick="loadAppointments()" style="max-width: 150px;">
+                <i class="fas fa-sync-alt"></i> Atualizar
+            </button>
+        </div>
+
+        <div id="loading" style="text-align: center; display: none; color: var(--gold-primary);">
+            <i class="fas fa-circle-notch fa-spin fa-2x"></i>
+        </div>
+
+        <div id="appointmentsList" class="appointments-list">
+            </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, query, where, orderBy, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // --- SUAS CHAVES DO FIREBASE ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyCICXCU3bgxoVK4kAXncxSWZHAazKFS65s",
+            authDomain: "agenda-salao-bbddf.firebaseapp.com",
+            projectId: "agenda-salao-bbddf",
+            storageBucket: "agenda-salao-bbddf.firebasestorage.app",
+            messagingSenderId: "977961284310",
+            appId: "1:977961284310:web:de2776476262d942e68f77",
+            measurementId: "G-WGP1LCJN9M"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // --- LÓGICA DE LOGIN (FRONT-END SIMPLIFICADO) ---
+        // ATENÇÃO: Isso não é segurança de banco de dados, é apenas visual.
+        // A senha é: admin123
+        
+        window.checkLogin = () => {
+            const pass = document.getElementById('adminPassword').value;
+            if(pass === "admin123") { // TROQUE A SENHA AQUI
+                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                loadAppointments(); // Carrega dados ao entrar
+            } else {
+                document.getElementById('loginError').textContent = "Senha incorreta.";
+            }
+        };
+
+        window.logout = () => {
+            location.reload();
+        };
+
+        // --- LÓGICA DO DASHBOARD ---
+
+        // Define a data de hoje no input ao abrir
+        const filterDateInput = document.getElementById('filterDate');
+        filterDateInput.value = new Date().toISOString().split("T")[0];
+
+        // Torna a função global para ser chamada pelo HTML
+        window.loadAppointments = async () => {
+            const listElement = document.getElementById('appointmentsList');
+            const loader = document.getElementById('loading');
+            const dateVal = filterDateInput.value;
+
+            listElement.innerHTML = '';
+            loader.style.display = 'block';
+
+            try {
+                // Query: Busca agendamentos da data selecionada, ordenados por hora
+                const q = query(
+                    collection(db, "agendamentos"),
+                    where("data", "==", dateVal),
+                    orderBy("hora") 
+                );
+
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    listElement.innerHTML = `
+                        <div class="empty-state">
+                            <i class="far fa-calendar-times fa-2x" style="margin-bottom: 10px;"></i>
+                            <p>Nenhum agendamento para esta data.</p>
+                        </div>`;
+                } else {
+                    querySnapshot.forEach((docSnap) => {
+                        const data = docSnap.data();
+                        const id = docSnap.id;
+                        
+                        // Cria o Card HTML
+                        const card = document.createElement('div');
+                        card.className = 'appt-card';
+                        card.innerHTML = `
+                            <div class="appt-info">
+                                <h3><i class="far fa-clock"></i> ${data.hora} - ${data.cliente}</h3>
+                                <p><span class="highlight">${data.servico}</span> com ${capitalize(data.profissional)}</p>
+                                <p><i class="fab fa-whatsapp"></i> ${data.telefone}</p>
+                            </div>
+                            <button class="btn-delete" onclick="deleteAppointment('${id}', '${data.cliente}')" title="Cancelar Agendamento">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        `;
+                        listElement.appendChild(card);
+                    });
+                }
+
+            } catch (error) {
+                console.error(error);
+                // Se der erro de índice no Firebase (comum ao usar orderBy a primeira vez)
+                if(error.message.includes("The query requires an index")) {
+                    listElement.innerHTML = `<p class="error">Falta criar o índice no Firebase. Abra o console do navegador para ver o link.</p>`;
+                } else {
+                    listElement.innerHTML = `<p class="error">Erro ao carregar dados.</p>`;
+                }
+            } finally {
+                loader.style.display = 'none';
+            }
+        };
+
+        // Função para apagar agendamento
+        window.deleteAppointment = async (id, clientName) => {
+            if(confirm(`Tem certeza que deseja CANCELAR o agendamento de ${clientName}?`)) {
+                try {
+                    await deleteDoc(doc(db, "agendamentos", id));
+                    alert("Agendamento cancelado!");
+                    loadAppointments(); // Recarrega a lista
+                } catch (error) {
+                    console.error("Erro ao excluir:", error);
+                    alert("Erro ao excluir.");
+                }
+            }
+        }
+
+        // Helper para maiúscula
+        function capitalize(s) {
+            return s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
+        }
+
+    </script>
+</body>
+</html>
