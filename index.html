@@ -2,64 +2,119 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SalonMaster - Escolha seu Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SalonMaster Elite</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💇‍♀️</text></svg>">
 </head>
 <body>
 
-    <div class="container">
+    <div class="bg-gradient"></div>
+
+    <div class="app-container">
+        
         <header>
-            <h1>SalonMaster</h1>
-            <p>Os melhores especialistas para você.</p>
+            <div class="brand">
+                <i class="ri-scissors-cut-fill logo-icon"></i>
+                <span>SalonMaster</span>
+            </div>
+            <div class="step-indicator">
+                <span class="step-dot active"></span>
+                <span class="step-dot"></span>
+                <span class="step-dot"></span>
+            </div>
         </header>
 
-        <section class="form-section">
-            <form id="bookingForm">
-                
-                <div class="step-section">
-                    <h3>1. Escolha o Profissional</h3>
-                    <div id="professionalsGrid" class="professionals-grid">
-                        </div>
-                    <input type="hidden" id="selectedProfessional" required>
+        <main>
+            <section id="step1" class="step active">
+                <div class="step-header">
+                    <h2>Quem vai cuidar de você?</h2>
+                    <p>Selecione um especialista</p>
+                </div>
+                <div id="professionalsGrid" class="scroll-grid">
+                    </div>
+            </section>
+
+            <section id="step2" class="step">
+                <div class="nav-back" onclick="changeStep(1)"><i class="ri-arrow-left-line"></i> Voltar</div>
+                <div class="step-header">
+                    <h2>O que vamos fazer?</h2>
+                    <p>Escolha o serviço e o dia</p>
                 </div>
 
-                <div id="step2" class="step-section hidden-step">
-                    <h3>2. Detalhes do Serviço</h3>
+                <div class="glass-form">
+                    <label class="floating-label">Serviço</label>
+                    <select id="service" class="custom-select">
+                        <option value="" disabled selected>Toque para selecionar...</option>
+                        </select>
                     
-                    <div class="input-group">
-                        <label>Serviço Desejado</label>
-                        <select id="service" required>
-                            <option value="" disabled selected>Selecione o serviço...</option>
-                            </select>
-                        <small id="serviceDurationDisplay" style="color: var(--primary-color); display:none; margin-top:5px;"></small>
-                    </div>
-
-                    <div class="input-group">
-                        <label>Data</label>
-                        <input type="date" id="date" required>
-                    </div>
-
-                    <div class="client-data-group">
-                        <input type="text" id="name" placeholder="Seu Nome" required>
-                        <input type="tel" id="phone" placeholder="Seu WhatsApp" required>
+                    <div class="date-selector-container">
+                        <label class="floating-label">Data</label>
+                        <input type="date" id="date" class="custom-date">
                     </div>
                 </div>
+            </section>
 
-                <div id="slotsSection" class="step-section hidden-step">
-                    <h3>3. Escolha o Horário</h3>
-                    <div id="slotsContainer" class="slots-grid">
+            <section id="step3" class="step">
+                <div class="nav-back" onclick="changeStep(2)"><i class="ri-arrow-left-line"></i> Voltar</div>
+                <div class="step-header">
+                    <h2>Horário Ideal</h2>
+                    <p>Disponibilidade para <span id="summaryService">...</span></p>
+                </div>
+                
+                <div id="slotsContainer" class="slots-container">
+                    </div>
+            </section>
+
+            <section id="step4" class="step">
+                <div class="nav-back" onclick="changeStep(3)"><i class="ri-arrow-left-line"></i> Voltar</div>
+                <div class="step-header">
+                    <h2>Quase lá!</h2>
+                    <p>Seus dados para confirmação</p>
+                </div>
+
+                <div class="glass-card summary-card">
+                    <div class="summary-row">
+                        <img id="finalProImg" src="" alt="" class="mini-avatar">
+                        <div>
+                            <strong id="finalProName">Profissional</strong>
+                            <div id="finalService">Serviço</div>
                         </div>
-                    <input type="hidden" id="selectedTime" required>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="summary-details">
+                        <span><i class="ri-calendar-line"></i> <span id="finalDate">Data</span></span>
+                        <span><i class="ri-time-line"></i> <span id="finalTime">Hora</span></span>
+                    </div>
                 </div>
 
-                <button type="submit" id="submitBtn" disabled>Confirmar Agendamento</button>
-            </form>
-        </section>
+                <form id="bookingForm" class="glass-form">
+                    <div class="input-wrapper">
+                        <i class="ri-user-line input-icon"></i>
+                        <input type="text" id="name" placeholder="Seu Nome Completo" required>
+                    </div>
+                    <div class="input-wrapper">
+                        <i class="ri-whatsapp-line input-icon"></i>
+                        <input type="tel" id="phone" placeholder="WhatsApp" required>
+                    </div>
+                    
+                    <button type="submit" id="submitBtn" class="cta-button">
+                        Confirmar Agendamento <i class="ri-check-double-line"></i>
+                    </button>
+                </form>
+            </section>
+        </main>
     </div>
 
-    <div id="toast" class="toast">Agendamento realizado!</div>
+    <div id="toast" class="toast-overlay">
+        <div class="toast-content">
+            <div class="success-icon"><i class="ri-check-line"></i></div>
+            <h3>Agendado!</h3>
+            <p>Enviamos a confirmação para seu WhatsApp.</p>
+        </div>
+    </div>
 
     <script type="module" src="app.js"></script>
 </body>
