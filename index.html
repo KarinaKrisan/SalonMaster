@@ -4,177 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lumière Beauty | Agendamento Exclusivo</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
-    <style>
-        :root {
-            /* Paleta Dark Luxury Rose Gold */
-            --bg-dark: #121212;
-            --bg-card: #1E1E1E;
-            --text-main: #E0E0E0;
-            --text-muted: #A0A0A0;
-            --gold-primary: #B76E79; /* Rose Gold */
-            --gold-hover: #D48C96;
-            --gold-gradient: linear-gradient(135deg, #B76E79 0%, #d698a3 100%);
-            --error: #ff4d4d;
-            --success: #4caf50;
-            --input-bg: #252525;
-            --border-color: #333;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: 'Lato', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        h1, h2, h3 { font-family: 'Playfair Display', serif; }
-
-        /* Container Principal com efeito de vidro sutil e borda dourada */
-        .container {
-            width: 100%;
-            max-width: 500px;
-            background: var(--bg-card);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
-            border: 1px solid rgba(183, 110, 121, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Detalhe estético no topo */
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: var(--gold-gradient);
-        }
-
-        header { text-align: center; margin-bottom: 35px; }
-        header h1 { color: var(--gold-primary); font-size: 2.5rem; margin-bottom: 5px; letter-spacing: 1px; }
-        header p { color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; font-size: 0.75rem; }
-
-        /* Estilização dos Inputs */
-        .form-group { margin-bottom: 25px; position: relative; }
-        label { display: block; margin-bottom: 8px; color: var(--gold-primary); font-size: 0.9rem; letter-spacing: 0.5px; }
-        
-        input, select {
-            width: 100%;
-            padding: 14px;
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            color: white;
-            font-size: 1rem;
-            outline: none;
-            transition: all 0.3s ease;
-            font-family: 'Lato', sans-serif;
-        }
-
-        input:focus, select:focus {
-            border-color: var(--gold-primary);
-            box-shadow: 0 0 10px rgba(183, 110, 121, 0.1);
-            background: #2a2a2a;
-        }
-
-        /* Ajuste do calendário para ficar escuro (navegadores suportados) */
-        ::-webkit-calendar-picker-indicator {
-            filter: invert(1);
-            opacity: 0.6;
-            cursor: pointer;
-        }
-
-        /* Grid de Horários */
-        .slots-container {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .slot-btn {
-            background: var(--input-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
-            padding: 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.9rem;
-            font-family: 'Lato', sans-serif;
-        }
-
-        .slot-btn:hover:not(:disabled) { 
-            border-color: var(--gold-primary); 
-            color: var(--gold-primary);
-            background: rgba(183, 110, 121, 0.05);
-        }
-        
-        .slot-btn.selected { 
-            background: var(--gold-gradient); 
-            color: #121212; 
-            font-weight: bold; 
-            border: 1px solid transparent; 
-            box-shadow: 0 5px 15px rgba(183, 110, 121, 0.3);
-        }
-        
-        .slot-btn:disabled { 
-            opacity: 0.2; 
-            cursor: not-allowed; 
-            background: #1a1a1a;
-            text-decoration: line-through; 
-        }
-
-        /* Botão Principal (CTA) */
-        .cta-btn {
-            width: 100%;
-            padding: 16px;
-            background: var(--gold-gradient);
-            color: #121212;
-            border: none;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            margin-top: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            transition: all 0.3s;
-        }
-
-        .cta-btn:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 8px 20px rgba(183, 110, 121, 0.3); 
-            filter: brightness(1.1);
-        }
-        
-        .cta-btn:active { transform: translateY(0); }
-        .cta-btn:disabled { background: #555; cursor: wait; filter: none; box-shadow: none; }
-
-        /* Mensagens de Feedback */
-        #message { margin-top: 20px; text-align: center; font-size: 0.95rem; min-height: 20px; font-weight: 500;}
-        .error { color: var(--error); }
-        .success { color: var(--success); }
-
-        /* Responsividade */
-        @media (max-width: 480px) {
-            .container { padding: 30px 20px; border-radius: 0; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; border: none;}
-            .slots-container { grid-template-columns: repeat(3, 1fr); }
-            header h1 { font-size: 2rem; }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
@@ -244,7 +77,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, query, where, getDocs, Timestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // --- SUAS CHAVES INSERIDAS AQUI ---
+        // --- SUAS CHAVES DO FIREBASE ---
         const firebaseConfig = {
             apiKey: "AIzaSyCICXCU3bgxoVK4kAXncxSWZHAazKFS65s",
             authDomain: "agenda-salao-bbddf.firebaseapp.com",
@@ -292,11 +125,10 @@
             
             elements.slotsGrid.innerHTML = '';
             elements.slotsLoader.style.display = 'block';
-            elements.selectedTimeInput.value = ''; // Reset da seleção anterior
+            elements.selectedTimeInput.value = ''; // Reset
 
             try {
                 // 1. Busca agendamentos existentes no Firestore
-                // Note: Certifique-se que a coleção 'agendamentos' existe ou será criada automaticamente
                 const q = query(
                     collection(db, "agendamentos"),
                     where("profissional", "==", profVal),
@@ -317,9 +149,8 @@
             } catch (error) {
                 console.error("Erro ao buscar agenda:", error);
                 let errorMsg = "Erro de conexão.";
-                // Verifica erro comum de permissão
                 if(error.code === 'permission-denied') {
-                    errorMsg = "Erro de permissão no banco de dados. Verifique as Regras do Firebase.";
+                    errorMsg = "Erro de permissão no banco. Verifique as Regras do Firebase.";
                 }
                 elements.msg.innerHTML = `<span class="error">${errorMsg}</span>`;
             } finally {
@@ -328,9 +159,9 @@
         }
 
         function generateSlots(busyTimes, serviceDuration) {
-            const startHour = 9; // Horário de abertura
-            const endHour = 19;  // Horário de fechamento
-            const interval = 30; // Intervalo de slots em minutos
+            const startHour = 9; // Abertura
+            const endHour = 19;  // Fechamento
+            const interval = 30; // Minutos
 
             let currentTime = new Date();
             currentTime.setHours(startHour, 0, 0, 0);
@@ -344,24 +175,20 @@
             while (currentTime < endTime) {
                 const timeString = currentTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
                 
-                // Calcula o horário de término do serviço proposto
                 const serviceEndTime = new Date(currentTime.getTime() + serviceDuration * 60000);
                 
-                // Validações
                 const isBusy = checkCollision(timeString, serviceDuration, busyTimes);
-                const isTooLate = serviceEndTime > endTime; // Não pode terminar depois que a loja fecha
+                const isTooLate = serviceEndTime > endTime;
 
                 if (!isBusy && !isTooLate) {
                     slotsHtml += `<button type="button" class="slot-btn" onclick="selectSlot(this, '${timeString}')">${timeString}</button>`;
                     hasSlots = true;
                 }
-
-                // Avança intervalo
                 currentTime.setMinutes(currentTime.getMinutes() + interval);
             }
 
             if (!hasSlots) {
-                elements.slotsGrid.innerHTML = '<p style="grid-column: span 4; color: var(--text-muted); text-align: center; padding: 10px;">Sem horários disponíveis para esta combinação.</p>';
+                elements.slotsGrid.innerHTML = '<p style="grid-column: span 4; color: var(--text-muted); text-align: center; padding: 10px;">Sem horários para esta data.</p>';
             } else {
                 elements.slotsGrid.innerHTML = slotsHtml;
             }
@@ -379,23 +206,19 @@
             for (let busy of busyList) {
                 const busyStart = timeToMin(busy.start);
                 const busyEnd = busyStart + busy.duration;
-
-                // Lógica de intersecção de intervalos
                 if (newStart < busyEnd && newEnd > busyStart) {
-                    return true; // Colisão
+                    return true; 
                 }
             }
             return false;
         }
 
-        // Função global para clique no botão de horário
         window.selectSlot = (btn, time) => {
             document.querySelectorAll('.slot-btn').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
             elements.selectedTimeInput.value = time;
         };
 
-        // Salvar Agendamento
         elements.form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -421,18 +244,18 @@
                     profissional: elements.professional.value,
                     data: elements.date.value,
                     hora: time,
-                    status: 'pendente', // Útil para painel admin
+                    status: 'pendente',
                     criadoEm: Timestamp.now()
                 });
 
-                elements.msg.innerHTML = '<span class="success"><i class="fas fa-check-circle"></i> Agendamento realizado com sucesso! Te esperamos.</span>';
+                elements.msg.innerHTML = '<span class="success"><i class="fas fa-check-circle"></i> Agendamento realizado com sucesso!</span>';
                 elements.form.reset();
-                elements.slotsGrid.innerHTML = '<div style="grid-column: span 4; text-align: center; color: #555;">Selecione os dados novamente para novo agendamento.</div>';
+                elements.slotsGrid.innerHTML = '<div style="grid-column: span 4; text-align: center; color: #555;">Selecione os dados novamente.</div>';
                 elements.selectedTimeInput.value = '';
                 
             } catch (error) {
                 console.error(error);
-                elements.msg.innerHTML = '<span class="error">Erro ao agendar. Tente novamente ou contate pelo WhatsApp.</span>';
+                elements.msg.innerHTML = '<span class="error">Erro ao agendar. Tente novamente.</span>';
             } finally {
                 elements.btn.disabled = false;
                 elements.btn.textContent = "Confirmar Agendamento";
