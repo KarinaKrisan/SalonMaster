@@ -36,163 +36,202 @@ h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
 /* --- CONTAINER PRINCIPAL --- */
 .container {
     width: 100%;
-    max-width: 600px; /* Levemente mais largo para acomodar a lista */
+    max-width: 500px;
     background: var(--bg-card);
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.7);
     border: 1px solid rgba(183, 110, 121, 0.1);
     position: relative;
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    min-height: 500px;
+}
+
+/* Ajuste para o Admin ser mais largo */
+.container.admin-container {
+    max-width: 800px;
 }
 
 /* Detalhe Dourado no Topo */
 .container::before {
     content: '';
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 3px;
+    top: 0; left: 0; width: 100%; height: 4px;
     background: var(--gold-gradient);
 }
 
-header { text-align: left; margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 15px; display: flex; align-items: center; gap: 15px; }
-.header-avatar { width: 50px; height: 50px; background: #333; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #777; font-size: 1.2rem; }
-header h1 { color: var(--text-main); font-size: 1.5rem; margin: 0; }
-header p { color: var(--text-muted); font-size: 0.8rem; margin: 0; }
+header { text-align: center; margin-bottom: 35px; }
+header h1 { color: var(--gold-primary); font-size: 2.5rem; margin-bottom: 5px; letter-spacing: 1px; }
+header p { color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; font-size: 0.75rem; }
 
-/* --- LISTA DE SERVIÇOS (IGUAL IMAGEM 2) --- */
-.service-list {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
+/* --- FORMULÁRIOS E INPUTS --- */
+.form-group { margin-bottom: 25px; position: relative; }
+label { display: block; margin-bottom: 8px; color: var(--gold-primary); font-size: 0.9rem; letter-spacing: 0.5px; }
 
-.service-card {
-    background: transparent;
-    padding: 15px 0;
-    border-bottom: 1px solid #333;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.service-card:last-child { border-bottom: none; }
-
-.service-info h4 { color: var(--text-main); font-size: 1rem; margin-bottom: 5px; font-weight: bold; }
-.service-meta { display: flex; flex-direction: column; gap: 3px; font-size: 0.85rem; color: var(--text-muted); }
-.service-meta span { display: flex; align-items: center; gap: 5px; }
-.service-meta i { font-size: 0.8rem; width: 15px; }
-
-.btn-reservar {
-    background: #fdf5e6; /* Tom creme similar a imagem */
-    color: #333;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 5px;
-    font-weight: bold;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.9rem;
-    transition: 0.2s;
-}
-.btn-reservar:hover { background: var(--gold-primary); color: white; }
-
-/* --- TELA DE AGENDAMENTO --- */
-.view-section { display: none; animation: fadeIn 0.4s; width: 100%; }
-.view-section.active { display: block; }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-.booking-header { text-align: center; margin-bottom: 20px; }
-.booking-header h3 { font-size: 1.1rem; color: var(--text-main); margin-bottom: 5px; }
-.booking-header p { color: var(--text-muted); font-size: 0.9rem; }
-.selected-prof-avatar { width: 60px; height: 60px; background: #333; border-radius: 50%; margin: 10px auto; border: 2px solid var(--gold-primary); background-size: cover; background-position: center; }
-
-/* Calendário Horizontal */
-.calendar-wrapper { text-align: center; margin-bottom: 25px; }
-.month-label { color: var(--text-muted); margin-bottom: 10px; font-size: 0.9rem; }
-
-.calendar-strip {
-    display: flex;
-    justify-content: center; /* Centraliza se tiver poucos dias */
-    overflow-x: auto;
-    gap: 8px;
-    padding-bottom: 10px;
-}
-.calendar-strip::-webkit-scrollbar { height: 4px; }
-.calendar-strip::-webkit-scrollbar-thumb { background: var(--gold-primary); border-radius: 4px; }
-
-.date-card {
-    min-width: 60px;
-    height: 70px;
-    background: #f8f9fa; /* Fundo claro igual imagem */
+input, select {
+    width: 100%;
+    padding: 14px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+    font-family: 'Lato', sans-serif;
+}
+
+input:focus, select:focus {
+    border-color: var(--gold-primary);
+    box-shadow: 0 0 10px rgba(183, 110, 121, 0.1);
+    background: #2a2a2a;
+}
+
+/* Ajuste ícone calendário */
+::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.6;
     cursor: pointer;
-    transition: 0.2s;
-    color: #333;
-}
-.date-card span.day { font-size: 0.75rem; text-transform: lowercase; color: #777; margin-bottom: 2px; }
-.date-card span.date { font-size: 1.2rem; font-weight: bold; color: #333; }
-
-.date-card:hover { transform: translateY(-2px); }
-.date-card.selected { 
-    background: #fff9c4; /* Amarelo claro igual imagem */
-    border: 1px solid #fbc02d;
 }
 
-/* Grid de Horários */
-.time-selection { text-align: center; }
-.time-label { color: var(--text-muted); margin-bottom: 15px; font-size: 0.9rem; }
+/* --- BOTÕES --- */
+.cta-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--gold-gradient);
+    color: #121212;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    transition: all 0.3s;
+}
 
-.slots-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
+.cta-btn:hover { 
+    transform: translateY(-2px); 
+    box-shadow: 0 8px 20px rgba(183, 110, 121, 0.3); 
+    filter: brightness(1.1);
+}
+.cta-btn:active { transform: translateY(0); }
+.cta-btn:disabled { background: #555; cursor: wait; filter: none; box-shadow: none; }
+
+/* --- MENSAGENS --- */
+#message, #loginMsg { margin-top: 20px; text-align: center; font-size: 0.95rem; min-height: 20px; font-weight: 500;}
+.error { color: var(--error); }
+.success { color: var(--success); }
+
+/* --- GRADE DE HORÁRIOS (CLIENTE) --- */
+.slots-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 10px;
+    margin-top: 10px;
 }
 
 .slot-btn {
-    background: #f8f9fa;
-    border: 1px solid #ddd;
-    color: #333;
-    padding: 10px 20px;
-    border-radius: 20px; /* Redondo igual imagem */
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 12px;
+    border-radius: 6px;
     cursor: pointer;
+    transition: all 0.3s;
     font-size: 0.9rem;
-    transition: 0.2s;
-}
-.slot-btn:hover { border-color: var(--gold-primary); }
-.slot-btn.selected { background: var(--gold-primary); color: white; border-color: var(--gold-primary); }
-
-/* MENSAGEM NENHUM HORÁRIO (IGUAL IMAGEM 3) */
-.no-slots-message {
+    font-family: 'Lato', sans-serif;
     text-align: center;
+}
+
+.slot-btn:hover:not(:disabled) { 
+    border-color: var(--gold-primary); 
+    color: var(--gold-primary);
+    background: rgba(183, 110, 121, 0.05);
+}
+
+.slot-btn.selected { 
+    background: var(--gold-gradient); 
+    color: #121212; 
+    font-weight: bold; 
+    border: 1px solid transparent; 
+    box-shadow: 0 5px 15px rgba(183, 110, 121, 0.3);
+}
+
+.slot-btn:disabled { opacity: 0.2; cursor: not-allowed; background: #1a1a1a; text-decoration: line-through; }
+
+/* --- ESTILOS DO PAINEL ADMIN --- */
+
+/* Overlay de Login */
+#login-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--bg-dark); z-index: 2000;
+    display: flex; justify-content: center; align-items: center; flex-direction: column;
+}
+
+/* Navegação por Abas */
+.tab-nav {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid rgba(183, 110, 121, 0.2);
+    padding-bottom: 15px;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
     color: var(--text-muted);
     font-size: 1.1rem;
-    margin-top: 30px;
-    width: 100%;
+    cursor: pointer;
+    padding: 10px 20px;
+    transition: all 0.3s;
+    font-family: 'Playfair Display', serif;
 }
 
-/* Form Cliente */
-.client-form { margin-top: 30px; border-top: 1px solid #333; padding-top: 20px; }
-.form-group { margin-bottom: 15px; }
-.form-group input { 
-    width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #444; 
-    background: #252525; color: white; outline: none; 
-}
-.form-group input:focus { border-color: var(--gold-primary); }
+.tab-btn:hover { color: var(--gold-primary); }
+.tab-btn.active { color: var(--gold-primary); border-bottom: 2px solid var(--gold-primary); }
 
-.cta-btn {
-    width: 100%; padding: 15px; background: var(--gold-gradient); color: #121212;
-    border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px;
-}
-.cta-btn:disabled { opacity: 0.6; cursor: wait; }
+/* Conteúdo das Abas */
+.tab-content { display: none; animation: fadeIn 0.5s; }
+.tab-content.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-/* Botão Voltar */
-.back-btn { background: none; border: none; color: var(--gold-primary); cursor: pointer; position: absolute; top: 20px; right: 20px; font-size: 1.2rem; }
+/* Controles do Admin */
+.admin-controls { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
+.admin-controls input { flex: 1; min-width: 200px; }
+.admin-controls button { flex: 1; background: #333; color: white; border: 1px solid #444; }
+.admin-controls button:hover { background: var(--gold-primary); color: #121212; }
+
+/* Lista de Cards (Admin) */
+.list-container { display: flex; flex-direction: column; gap: 15px; }
+
+.admin-card {
+    background: #252525;
+    padding: 20px;
+    border-radius: 12px;
+    border-left: 4px solid var(--gold-primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: transform 0.2s;
+}
+.admin-card:hover { transform: translateX(5px); background: #2a2a2a; }
+
+.btn-delete {
+    background: transparent; border: 1px solid var(--error); color: var(--error);
+    width: 35px; height: 35px; border-radius: 5px;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
+}
+.btn-delete:hover { background: var(--error); color: white; }
+
+/* Responsividade */
+@media (max-width: 600px) {
+    .container { padding: 30px 20px; }
+    .slots-container { grid-template-columns: repeat(3, 1fr); }
+    .admin-controls { flex-direction: column; }
+    .admin-card { flex-direction: column; text-align: center; gap: 10px; }
+}
