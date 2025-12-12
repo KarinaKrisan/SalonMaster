@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lumière Beauty | Agendamento Exclusivo</title>
+    <title>Lumière Beauty | Agendamento</title>
     
     <link rel="stylesheet" href="style.css">
     
@@ -12,60 +12,79 @@
 <body>
 
     <div class="container">
-        <header>
-            <h1>Lumière</h1>
-            <p>Agendamento Premium</p>
-        </header>
-
-        <form id="bookingForm">
-            <div class="form-group">
-                <label for="service"><i class="fas fa-sparkles"></i> Escolha o Serviço</label>
-                <select id="service" required>
-                    <option value="" disabled selected>Carregando serviços...</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="professional"><i class="fas fa-user"></i> Profissional</label>
-                <select id="professional" required>
-                    <option value="" disabled selected>Carregando equipe...</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="date"><i class="far fa-calendar-alt"></i> Data</label>
-                <input type="date" id="date" required>
-            </div>
-
-            <div class="form-group">
-                <label><i class="far fa-clock"></i> Horários Disponíveis</label>
-                <div id="slots-loader" style="display:none; color: var(--gold-primary); font-size: 0.9rem; text-align: center; padding: 10px;">
-                    <i class="fas fa-circle-notch fa-spin"></i> Verificando disponibilidade...
-                </div>
-                <div class="slots-container" id="slots-grid">
-                    <div style="grid-column: span 4; color: #555; text-align: center; font-size: 0.9rem; padding: 20px; border: 1px dashed #333; border-radius: 8px;">
-                        Selecione serviço, profissional e data.
-                    </div>
-                </div>
-                <input type="hidden" id="selectedTime">
-            </div>
-
-            <div class="form-group">
-                <label for="clientName">Seu Nome</label>
-                <input type="text" id="clientName" placeholder="Nome completo" required autocomplete="name">
+        
+        <div id="services-view" class="view-section active">
+            <header>
+                <h1>Lumière</h1>
+                <p>Selecione um Serviço</p>
+            </header>
+            
+            <div id="loading-services" style="text-align: center; color: var(--gold-primary); display: none;">
+                <i class="fas fa-circle-notch fa-spin fa-2x"></i>
             </div>
             
-            <div class="form-group">
-                <label for="clientPhone">WhatsApp</label>
-                <input type="tel" id="clientPhone" placeholder="(11) 99999-9999" required autocomplete="tel">
+            <div id="services-list-container">
+                </div>
+        </div>
+
+        <div id="booking-view" class="view-section">
+            <div class="nav-header">
+                <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i></button>
+                <h3 id="selectedServiceName" style="color: var(--text-main);">Serviço Selecionado</h3>
             </div>
 
-            <button type="submit" class="cta-btn" id="submitBtn">Confirmar Agendamento</button>
-            <div id="message"></div>
-        </form>
+            <form id="bookingForm">
+                
+                <div class="form-group">
+                    <label style="text-align: center; margin-bottom: 10px;">Selecione o Profissional</label>
+                    <select id="professional" required>
+                        <option value="" disabled selected>Carregando equipe...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label style="text-align: center; margin-bottom: 10px;" id="monthLabel">Mês</label>
+                    <div class="calendar-strip" id="calendarStrip">
+                        </div>
+                    <input type="hidden" id="selectedDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label style="text-align: center;">Selecione o Horário</label>
+                    <div id="slots-loader" style="display:none; color: var(--gold-primary); text-align: center; margin-top: 10px;">
+                        <i class="fas fa-circle-notch fa-spin"></i> Buscando...
+                    </div>
+                    <div class="slots-container" id="slots-grid">
+                        <div style="grid-column: span 4; text-align: center; color: #555; padding: 10px; font-size: 0.9rem;">
+                            Selecione profissional e data.
+                        </div>
+                    </div>
+                    <input type="hidden" id="selectedTime">
+                </div>
+
+                <div style="border-top: 1px solid #333; padding-top: 20px; margin-top: 20px;">
+                    <div class="form-group">
+                        <input type="text" id="clientName" placeholder="Seu Nome Completo" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="tel" id="clientPhone" placeholder="Seu WhatsApp" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="cta-btn" id="submitBtn">Confirmar Agendamento</button>
+                <div id="message"></div>
+            </form>
+        </div>
+
     </div>
 
     <script type="module" src="app.js"></script>
-
+    
+    <script>
+        function goBack() {
+            document.getElementById('booking-view').classList.remove('active');
+            document.getElementById('services-view').classList.add('active');
+        }
+    </script>
 </body>
 </html>
