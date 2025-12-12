@@ -1,178 +1,58 @@
-/* --- IMPORTAÇÕES --- */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap');
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
+/* --- ESTILOS ESPECÍFICOS DO ADMIN --- */
 
-/* --- VARIÁVEIS --- */
-:root {
-    --bg-dark: #121212;
-    --bg-card: #1E1E1E;
-    --text-main: #E0E0E0;
-    --text-muted: #A0A0A0;
-    --gold-primary: #B76E79; 
-    --gold-gradient: linear-gradient(135deg, #B76E79 0%, #d698a3 100%);
-    --creme-claro: #fdf5e6;
-    --input-bg: #252525;
-    --border-color: #333;
-    --error: #ff4d4d;
-    --success: #4caf50;
+/* Login Overlay */
+#login-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--bg-dark); z-index: 2000;
+    display: flex; justify-content: center; align-items: center; flex-direction: column;
+}
+.login-container { max-width: 400px; text-align: center; }
+.login-title { color: var(--gold-primary); margin-bottom: 10px; }
+.login-subtitle { color: #777; font-size: 0.9rem; margin-bottom: 20px; }
+.error-msg { margin-top: 15px; color: var(--error); font-size: 0.9rem; }
+
+/* Admin Panel - Inicialmente Oculto */
+#adminPanel { display: none; }
+.admin-header { display: flex; justify-content: space-between; align-items: center; border: none; margin-bottom: 20px; }
+.welcome-text { color: var(--gold-primary); font-weight: bold; margin: 0; }
+.logout-btn { background: none; border: none; color: #777; cursor: pointer; font-size: 1rem; }
+.logout-btn:hover { color: var(--error); }
+
+/* Navegação por Abas */
+.tab-nav { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+.tab-btn { background: none; border: none; color: #777; font-size: 1.1rem; cursor: pointer; padding-bottom: 5px; }
+.tab-btn.active { color: var(--gold-primary); border-bottom: 2px solid var(--gold-primary); }
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeIn 0.3s; }
+
+/* Controles e Cards */
+.admin-controls { display: flex; gap: 10px; margin-bottom: 20px; }
+.btn-small { width: auto; margin: 0; padding: 10px 20px; font-size: 0.9rem; }
+.list-container { display: flex; flex-direction: column; gap: 10px; }
+
+.admin-card { 
+    background: #252525; padding: 15px; border-radius: 8px; 
+    border-left: 4px solid var(--gold-primary); 
+    display: flex; justify-content: space-between; align-items: center; 
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-    background-color: var(--bg-dark);
-    color: var(--text-main);
-    font-family: 'Lato', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
+/* Formulários de Adição */
+.add-box { 
+    padding: 15px; border: 1px dashed var(--gold-primary); 
+    margin-bottom: 20px; border-radius: 8px; 
 }
+.box-title { color: white; margin-bottom: 10px; }
+.add-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.input-small { width: 80px; }
 
-h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
-
-/* --- CONTAINER --- */
-.container {
-    width: 100%;
-    max-width: 600px;
-    background: var(--bg-card);
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-    border: 1px solid rgba(183, 110, 121, 0.1);
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    min-height: 600px;
+.btn-delete { 
+    color: var(--error); border: 1px solid var(--error); background: none; 
+    border-radius: 5px; cursor: pointer; padding: 5px 10px; transition: 0.2s;
 }
+.btn-delete:hover { background: var(--error); color: white; }
 
-.container::before {
-    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px;
-    background: var(--gold-gradient);
+/* Responsividade Admin */
+@media(max-width:600px){ 
+    .admin-controls, .add-row { flex-direction: column; } 
+    .input-small { width: 100%; }
 }
-
-/* --- HEADER --- */
-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #333; }
-.header-avatar { width: 50px; height: 50px; background: #333; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #777; font-size: 1.2rem; }
-header h1 { font-size: 1.5rem; color: var(--text-main); font-weight: bold; margin: 0; }
-header p { font-size: 0.8rem; color: var(--text-muted); margin: 0; }
-
-/* --- CONTROLE DE TELAS (VIEWS) --- */
-.view-section { display: none; animation: fadeIn 0.4s ease-in-out; width: 100%; }
-.view-section.active { display: block; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-/* --- TELA 1: LISTA DE SERVIÇOS --- */
-.section-title { color: var(--gold-primary); margin-bottom: 20px; font-size: 1.2rem; }
-.service-list { display: flex; flex-direction: column; gap: 15px; }
-
-.service-card {
-    background: rgba(255,255,255,0.02);
-    padding: 15px;
-    border-radius: 8px;
-    border: 1px solid #333;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: 0.3s;
-}
-.service-card:hover { border-color: var(--gold-primary); background: rgba(183, 110, 121, 0.05); }
-
-.service-info h4 { color: var(--text-main); font-size: 1rem; margin-bottom: 5px; }
-.service-meta span { display: block; font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; }
-.service-meta i { width: 15px; text-align: center; color: var(--gold-primary); }
-
-/* Botão Agendar (Premium) */
-.btn-reservar {
-    background: var(--creme-claro);
-    color: #333;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    display: flex; align-items: center; gap: 8px;
-    font-size: 0.9rem;
-    transition: all 0.3s;
-    font-family: 'Lato', sans-serif;
-}
-.btn-reservar:hover {
-    background: var(--gold-primary);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(183, 110, 121, 0.3);
-}
-
-/* --- TELA 2: AGENDAMENTO --- */
-.booking-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-.back-btn { background: none; border: none; color: var(--gold-primary); cursor: pointer; font-size: 1rem; display: flex; align-items: center; gap: 5px; }
-.back-btn:hover { text-decoration: underline; }
-.step-indicator { color: #555; font-size: 0.8rem; }
-
-.booking-header { text-align: center; background: #252525; padding: 15px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #333; }
-.booking-header p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 5px; }
-.highlight-service { color: var(--gold-primary); margin: 0; font-size: 1.3rem; }
-
-.form-section { margin-bottom: 25px; }
-.form-section label { display: block; color: var(--text-main); margin-bottom: 10px; font-size: 0.95rem; }
-
-/* Select Customizado */
-.custom-select-wrapper { position: relative; }
-select {
-    width: 100%; padding: 14px; background: var(--input-bg); border: 1px solid var(--border-color);
-    border-radius: 8px; color: white; font-size: 1rem; appearance: none; outline: none; font-family: 'Lato', sans-serif;
-}
-.select-arrow { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--gold-primary); pointer-events: none; }
-
-/* Calendário Horizontal */
-.calendar-wrapper { background: #252525; padding: 10px; border-radius: 8px; }
-.calendar-strip { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 5px; }
-.calendar-strip::-webkit-scrollbar { height: 4px; }
-.calendar-strip::-webkit-scrollbar-thumb { background: var(--gold-primary); border-radius: 4px; }
-
-.date-card {
-    min-width: 60px; height: 70px; background: #333; border-radius: 6px;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    cursor: pointer; transition: 0.2s; color: #aaa; flex-shrink: 0;
-}
-.date-card span.day { font-size: 0.75rem; text-transform: uppercase; margin-bottom: 3px; }
-.date-card span.date { font-size: 1.2rem; font-weight: bold; color: white; }
-.date-card.selected { background: var(--creme-claro); }
-.date-card.selected span.day, .date-card.selected span.date { color: #121212; }
-
-/* Grid Horários */
-.slots-grid { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-start; }
-.instruction-text { color: #555; width: 100%; text-align: center; font-style: italic; }
-.no-slots-message { width: 100%; text-align: center; color: var(--text-muted); margin-top: 10px; }
-
-.slot-btn {
-    background: #333; color: #ccc; border: 1px solid #444; padding: 10px 15px;
-    border-radius: 20px; cursor: pointer; transition: 0.2s; font-size: 0.9rem;
-}
-.slot-btn:hover { border-color: var(--gold-primary); color: var(--gold-primary); }
-.slot-btn.selected { background: var(--gold-primary); color: white; border-color: var(--gold-primary); }
-
-/* Dados Pessoais */
-.client-form-section { margin-top: 30px; }
-.form-group { margin-bottom: 15px; }
-.form-group input { 
-    width: 100%; padding: 14px; background: var(--input-bg); border: 1px solid var(--border-color);
-    border-radius: 8px; color: white; outline: none; font-size: 1rem;
-}
-.form-group input:focus { border-color: var(--gold-primary); }
-
-/* Botão Confirmar */
-.cta-btn {
-    width: 100%; padding: 16px; background: var(--gold-gradient); color: #121212;
-    border: none; border-radius: 8px; font-weight: bold; font-size: 1rem;
-    cursor: pointer; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px;
-}
-.cta-btn:hover { filter: brightness(1.1); box-shadow: 0 5px 15px rgba(183, 110, 121, 0.4); }
-.cta-btn:disabled { background: #444; color: #777; cursor: not-allowed; box-shadow: none; }
-
-/* Mensagens */
-#message { text-align: center; margin-top: 15px; font-weight: bold; }
-.error { color: var(--error); }
-.success { color: var(--success); }
