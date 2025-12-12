@@ -15,12 +15,12 @@
             <div class="header-avatar"><i class="fas fa-user"></i></div>
             <div>
                 <p>Seja bem vindo(a) ao</p>
-                <h1>Lumière Beauty | Agendamento</h1>
+                <h1>Lumière Beauty</h1>
             </div>
         </header>
 
         <div id="services-view" class="view-section active">
-            <h3 style="color: var(--text-main); margin-bottom: 20px;">Serviços</h3>
+            <h3 class="section-title">Nossos Procedimentos</h3>
             
             <div id="loading-services" style="text-align: center; color: var(--gold-primary); display: none;">
                 <i class="fas fa-circle-notch fa-spin fa-2x"></i>
@@ -31,46 +31,64 @@
         </div>
 
         <div id="booking-view" class="view-section">
-            <button class="back-btn" onclick="goBack()"><i class="fas fa-times"></i></button>
+            
+            <div class="booking-nav">
+                <button class="back-btn" onclick="goBack()">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </button>
+                <span class="step-indicator">Passo 2 de 2</span>
+            </div>
 
             <div class="booking-header">
-                <p>Serviço selecionado: <strong id="selectedServiceName" style="color:var(--text-main)">Nome Serviço</strong></p>
-                <p style="margin-top: 5px;">Selecione o profissional</p>
-                
-                <div class="form-group" style="margin-top: 10px; max-width: 200px; margin-left: auto; margin-right: auto;">
-                    <select id="professional" style="text-align: center;">
-                        <option value="" disabled selected>Carregando...</option>
-                    </select>
-                </div>
+                <p>Procedimento Selecionado:</p>
+                <h2 id="selectedServiceName" class="highlight-service">Nome do Serviço</h2>
             </div>
 
             <form id="bookingForm">
                 
-                <div class="calendar-wrapper">
-                    <div class="month-label" id="monthLabel">Mês</div>
-                    <div class="calendar-strip" id="calendarStrip"></div>
+                <div class="form-section">
+                    <label>Selecione o Profissional</label>
+                    <div class="custom-select-wrapper">
+                        <select id="professional" required>
+                            <option value="" disabled selected>Carregando equipe...</option>
+                        </select>
+                        <i class="fas fa-chevron-down select-arrow"></i>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <label id="monthLabel">Data</label>
+                    <div class="calendar-wrapper">
+                        <div class="calendar-strip" id="calendarStrip"></div>
+                    </div>
                     <input type="hidden" id="selectedDate" required>
                 </div>
 
-                <div class="time-selection">
-                    <p class="time-label" id="timeLabel">Selecione o horário de início</p>
-                    <div id="slots-loader" style="display:none; color: var(--gold-primary); margin-bottom: 10px;">
-                        <i class="fas fa-circle-notch fa-spin"></i>
+                <div class="form-section">
+                    <label id="timeLabel">Horário de Início</label>
+                    
+                    <div id="slots-loader" style="display:none; text-align: center; margin: 10px 0;">
+                        <i class="fas fa-circle-notch fa-spin" style="color: var(--gold-primary)"></i>
                     </div>
+
                     <div class="slots-grid" id="slots-grid">
-                        <p style="color: #555; font-size: 0.9rem;">Escolha uma data acima.</p>
+                        <p class="instruction-text">Escolha um profissional e uma data.</p>
                     </div>
                     <input type="hidden" id="selectedTime">
                 </div>
 
-                <div class="client-form">
+                <div class="client-form-section">
+                    <h4 style="color: var(--gold-primary); margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">Seus Dados</h4>
                     <div class="form-group">
-                        <input type="text" id="clientName" placeholder="Seu Nome" required>
+                        <input type="text" id="clientName" placeholder="Nome Completo" required>
                     </div>
                     <div class="form-group">
-                        <input type="tel" id="clientPhone" placeholder="Seu Celular" required>
+                        <input type="tel" id="clientPhone" placeholder="WhatsApp (DDD + Número)" required>
                     </div>
-                    <button type="submit" class="cta-btn" id="submitBtn">Confirmar Agendamento</button>
+                    
+                    <button type="submit" class="cta-btn" id="submitBtn">
+                        Confirmar Agendamento
+                    </button>
                     <div id="message"></div>
                 </div>
 
@@ -81,9 +99,13 @@
 
     <script type="module" src="app.js"></script>
     <script>
+        // Função simples para voltar para a tela de serviços
         function goBack() {
             document.getElementById('booking-view').classList.remove('active');
             document.getElementById('services-view').classList.add('active');
+            // Limpa seleções para evitar confusão
+            document.getElementById('slots-grid').innerHTML = '<p class="instruction-text">Escolha um profissional e uma data.</p>';
+            document.getElementById('timeLabel').style.display = 'block';
         }
     </script>
 </body>
