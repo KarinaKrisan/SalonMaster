@@ -16,7 +16,7 @@
     --success: #4caf50;
     --input-bg: #252525;
     --border-color: #333;
-    --creme-claro: #fdf5e6; /* Cor semelhante ao botão da imagem 0 */
+    --creme-claro: #fdf5e6; /* Cor creme baseada na referência do botão */
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -37,7 +37,7 @@ h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
 /* --- CONTAINER PRINCIPAL --- */
 .container {
     width: 100%;
-    max-width: 600px; /* Levemente mais largo para acomodar a lista */
+    max-width: 600px;
     background: var(--bg-card);
     padding: 30px;
     border-radius: 15px;
@@ -60,10 +60,10 @@ h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
 
 header { text-align: left; margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 15px; display: flex; align-items: center; gap: 15px; }
 .header-avatar { width: 50px; height: 50px; background: #333; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #777; font-size: 1.2rem; }
-header h1 { color: var(--text-main); font-size: 1.5rem; margin: 0; }
+header h1 { color: var(--text-main); font-size: 1.4rem; margin: 0; font-weight: bold; }
 header p { color: var(--text-muted); font-size: 0.8rem; margin: 0; }
 
-/* --- LISTA DE SERVIÇOS (IGUAL IMAGEM 2) --- */
+/* --- LISTA DE SERVIÇOS --- */
 .service-list {
     display: flex;
     flex-direction: column;
@@ -85,31 +85,31 @@ header p { color: var(--text-muted); font-size: 0.8rem; margin: 0; }
 .service-meta span { display: flex; align-items: center; gap: 5px; }
 .service-meta i { font-size: 0.8rem; width: 15px; }
 
-/* Botão "Agendar" Melhorado */
+/* Botão "Agendar" Melhorado (Estilo Premium/Creme) */
 .btn-reservar {
-    background: var(--creme-claro); /* Cor clara semelhante ao botão da imagem 0 */
-    color: #333;
+    background: var(--creme-claro); /* Fundo claro */
+    color: #333; /* Texto escuro para contraste */
     border: 1px solid var(--creme-claro);
-    padding: 10px 18px; /* Levemente maior */
+    padding: 10px 20px;
     border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 8px; /* Mais espaço entre ícone e texto */
-    font-size: 0.95rem;
+    gap: 8px;
+    font-size: 0.9rem;
     transition: all 0.3s ease;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    font-family: 'Lato', sans-serif;
 }
+
+/* Efeito Hover: Fica Dourado Rose com texto branco */
 .btn-reservar:hover { 
     background: var(--gold-primary); 
     color: white; 
     border-color: var(--gold-primary);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(183, 110, 121, 0.3);
-}
-.btn-reservar i {
-    font-size: 1rem;
+    box-shadow: 0 4px 10px rgba(183, 110, 121, 0.3);
 }
 
 /* --- TELA DE AGENDAMENTO --- */
@@ -120,7 +120,6 @@ header p { color: var(--text-muted); font-size: 0.8rem; margin: 0; }
 .booking-header { text-align: center; margin-bottom: 20px; }
 .booking-header h3 { font-size: 1.1rem; color: var(--text-main); margin-bottom: 5px; }
 .booking-header p { color: var(--text-muted); font-size: 0.9rem; }
-.selected-prof-avatar { width: 60px; height: 60px; background: #333; border-radius: 50%; margin: 10px auto; border: 2px solid var(--gold-primary); background-size: cover; background-position: center; }
 
 /* Calendário Horizontal */
 .calendar-wrapper { text-align: center; margin-bottom: 25px; }
@@ -128,7 +127,7 @@ header p { color: var(--text-muted); font-size: 0.8rem; margin: 0; }
 
 .calendar-strip {
     display: flex;
-    justify-content: center; /* Centraliza se tiver poucos dias */
+    justify-content: center;
     overflow-x: auto;
     gap: 8px;
     padding-bottom: 10px;
@@ -139,7 +138,7 @@ header p { color: var(--text-muted); font-size: 0.8rem; margin: 0; }
 .date-card {
     min-width: 60px;
     height: 70px;
-    background: #f8f9fa; /* Fundo claro igual imagem */
+    background: #f8f9fa;
     border-radius: 8px;
     display: flex;
     flex-direction: column;
@@ -151,12 +150,8 @@ header p { color: var(--text-muted); font-size: 0.8rem; margin: 0; }
 }
 .date-card span.day { font-size: 0.75rem; text-transform: lowercase; color: #777; margin-bottom: 2px; }
 .date-card span.date { font-size: 1.2rem; font-weight: bold; color: #333; }
-
 .date-card:hover { transform: translateY(-2px); }
-.date-card.selected { 
-    background: #fff9c4; /* Amarelo claro igual imagem */
-    border: 1px solid #fbc02d;
-}
+.date-card.selected { background: #fff9c4; border: 1px solid #fbc02d; }
 
 /* Grid de Horários */
 .time-selection { text-align: center; }
@@ -174,7 +169,7 @@ header p { color: var(--text-muted); font-size: 0.8rem; margin: 0; }
     border: 1px solid #ddd;
     color: #333;
     padding: 10px 20px;
-    border-radius: 20px; /* Redondo igual imagem */
+    border-radius: 20px;
     cursor: pointer;
     font-size: 0.9rem;
     transition: 0.2s;
@@ -182,7 +177,7 @@ header p { color: var(--text-muted); font-size: 0.8rem; margin: 0; }
 .slot-btn:hover { border-color: var(--gold-primary); }
 .slot-btn.selected { background: var(--gold-primary); color: white; border-color: var(--gold-primary); }
 
-/* MENSAGEM NENHUM HORÁRIO (IGUAL IMAGEM 3) */
+/* Mensagem Nenhum Horário */
 .no-slots-message {
     text-align: center;
     color: var(--text-muted);
