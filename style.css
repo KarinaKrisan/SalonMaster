@@ -1,27 +1,40 @@
 /* --- IMPORTAÇÕES --- */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lato:wght@300;400;700&display=swap');
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
 
 /* --- VARIÁVEIS GLOBAIS --- */
 :root {
     /* Paleta Dark Luxury Rose Gold */
-    --bg-dark: #121212;
-    --bg-card: #1E1E1E;
-    --text-main: #E0E0E0;
-    --text-muted: #A0A0A0;
-    --gold-primary: #B76E79; /* Rose Gold */
-    --gold-hover: #D48C96;
-    --gold-gradient: linear-gradient(135deg, #B76E79 0%, #d698a3 100%);
+    --bg-dark: #0a0a0a; /* Preto mais profundo */
+    --bg-card: rgba(30, 30, 30, 0.6); /* Vidro escuro */
+    --bg-input: rgba(255, 255, 255, 0.03);
+    
+    --text-main: #F5F5F5;
+    --text-muted: #888888;
+    
+    /* Rose Gold Refinado */
+    --gold-primary: #D4AF37; /* Base dourada mais rica */
+    --rose-gold: #B76E79;
+    --gold-gradient: linear-gradient(135deg, #B76E79 0%, #e0aaeb 50%, #B76E79 100%);
+    --gold-glow: 0 0 15px rgba(183, 110, 121, 0.3);
+    
     --error: #ff4d4d;
     --success: #4caf50;
-    --input-bg: #252525;
-    --border-color: #333;
+    
+    /* Bordas e Transições */
+    --border-subtle: 1px solid rgba(255, 255, 255, 0.08);
+    --border-focus: 1px solid rgba(183, 110, 121, 0.5);
+    --ease-smooth: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --radius-lg: 24px;
+    --radius-sm: 12px;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
     background-color: var(--bg-dark);
+    /* Adiciona um gradiente sutil no fundo para profundidade */
+    background-image: radial-gradient(circle at top right, rgba(183, 110, 121, 0.08), transparent 40%);
     color: var(--text-main);
     font-family: 'Lato', sans-serif;
     min-height: 100vh;
@@ -31,260 +44,251 @@ body {
     padding: 20px;
 }
 
-h1, h2, h3, h4 { font-family: 'Playfair Display', serif; }
+/* Tipografia de Luxo */
+h1, h2, h3, h4 { 
+    font-family: 'Playfair Display', serif; 
+    font-weight: 400;
+}
 
-/* --- COMPONENTES GERAIS (Container, Inputs, Botões) --- */
+/* --- SCROLLBAR PREMIUM --- */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(183, 110, 121, 0.3); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--rose-gold); }
 
+/* --- CONTAINER GLASSMORPHISM --- */
 .container {
     width: 100%;
     max-width: 500px;
     background: var(--bg-card);
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.7);
-    border: 1px solid rgba(183, 110, 121, 0.1);
+    backdrop-filter: blur(16px); /* Efeito de vidro fosco */
+    -webkit-backdrop-filter: blur(16px);
+    padding: 45px;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     position: relative;
     overflow: hidden;
-    /* Ajuste para garantir que o calendário não quebre o layout */
-    display: flex;
-    flex-direction: column; 
 }
 
-/* Container mais largo apenas para o admin */
-.container.admin-container {
-    max-width: 800px;
-}
-
+/* Detalhe superior brilhante */
 .container::before {
     content: '';
     position: absolute;
-    top: 0; left: 0; width: 100%; height: 4px;
+    top: 0; left: 0; width: 100%; height: 3px;
     background: var(--gold-gradient);
+    box-shadow: 0 2px 15px rgba(183, 110, 121, 0.5);
 }
 
-header { text-align: center; margin-bottom: 35px; }
-header h1 { color: var(--gold-primary); font-size: 2.5rem; margin-bottom: 5px; letter-spacing: 1px; }
-header p { color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; font-size: 0.75rem; }
+.container.admin-container { max-width: 900px; }
 
-/* Formulários */
-.form-group { margin-bottom: 25px; position: relative; }
-label { display: block; margin-bottom: 8px; color: var(--gold-primary); font-size: 0.9rem; letter-spacing: 0.5px; }
+header { text-align: center; margin-bottom: 40px; position: relative; }
+header h1 { 
+    color: var(--text-main); /* Branco suave fica mais chique que dourado no titulo */
+    font-size: 2.8rem; 
+    margin-bottom: 5px; 
+    letter-spacing: 1px;
+    background: var(--gold-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent; /* Texto degradê */
+}
+header p { 
+    color: var(--text-muted); 
+    letter-spacing: 3px; 
+    text-transform: uppercase; 
+    font-size: 0.7rem; 
+    font-weight: 700;
+}
+
+/* --- FORMULÁRIOS --- */
+.form-group { margin-bottom: 25px; }
+label { 
+    display: block; 
+    margin-bottom: 10px; 
+    color: var(--rose-gold); 
+    font-size: 0.85rem; 
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+}
 
 input, select {
     width: 100%;
-    padding: 14px;
-    background: var(--input-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
+    padding: 16px;
+    background: var(--bg-input);
+    border: var(--border-subtle);
+    border-radius: var(--radius-sm);
     color: white;
     font-size: 1rem;
     outline: none;
-    transition: all 0.3s ease;
+    transition: var(--ease-smooth);
     font-family: 'Lato', sans-serif;
 }
 
 input:focus, select:focus {
-    border-color: var(--gold-primary);
-    box-shadow: 0 0 10px rgba(183, 110, 121, 0.1);
-    background: #2a2a2a;
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--rose-gold);
+    box-shadow: 0 0 20px rgba(183, 110, 121, 0.15);
+    transform: translateY(-1px);
 }
 
-/* Botão Principal (CTA) */
+/* Placeholder sutil */
+::placeholder { color: rgba(255,255,255,0.2); }
+
+/* Ícone de calendário customizado */
+::-webkit-calendar-picker-indicator {
+    filter: invert(1) sepia(0.5) saturate(3) hue-rotate(300deg);
+    opacity: 0.7;
+    cursor: pointer;
+}
+
+/* --- BOTÕES & CTA --- */
 .cta-btn {
     width: 100%;
-    padding: 16px;
+    padding: 18px;
     background: var(--gold-gradient);
-    color: #121212;
+    background-size: 200% auto;
+    color: #1a1a1a;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 0.95rem;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 15px;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
-    transition: all 0.3s;
+    letter-spacing: 2px;
+    transition: var(--ease-smooth);
+    box-shadow: 0 10px 20px -5px rgba(183, 110, 121, 0.4);
 }
 
 .cta-btn:hover { 
-    transform: translateY(-2px); 
-    box-shadow: 0 8px 20px rgba(183, 110, 121, 0.3); 
-    filter: brightness(1.1);
+    background-position: right center; /* Anima o gradiente */
+    transform: translateY(-3px); 
+    box-shadow: 0 15px 30px -5px rgba(183, 110, 121, 0.6); 
 }
-.cta-btn:active { transform: translateY(0); }
-.cta-btn:disabled { background: #555; cursor: wait; filter: none; box-shadow: none; }
+.cta-btn:active { transform: translateY(-1px); }
+.cta-btn:disabled { 
+    background: #333; color: #666; cursor: not-allowed; box-shadow: none; 
+}
 
-/* Mensagens */
-#message { margin-top: 20px; text-align: center; font-size: 0.95rem; min-height: 20px; font-weight: 500;}
-.error { color: var(--error); }
-.success { color: var(--success); }
-
-/* --- COMPONENTES DE AGENDAMENTO (SLOTS) --- */
-
+/* --- SLOTS DE HORÁRIO --- */
 .slots-container {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
+    gap: 12px;
     margin-top: 10px;
 }
 
 .slot-btn {
-    background: var(--input-bg);
-    border: 1px solid var(--border-color);
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.1);
     color: var(--text-muted);
     padding: 12px;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: var(--ease-smooth);
     font-size: 0.9rem;
-    font-family: 'Lato', sans-serif;
+    text-align: center;
 }
 
 .slot-btn:hover:not(:disabled) { 
-    border-color: var(--gold-primary); 
-    color: var(--gold-primary);
+    border-color: var(--rose-gold); 
+    color: var(--rose-gold);
     background: rgba(183, 110, 121, 0.05);
+    box-shadow: var(--gold-glow);
 }
 
 .slot-btn.selected { 
-    background: var(--gold-gradient); 
-    color: #121212; 
-    font-weight: bold; 
-    border: 1px solid transparent; 
-    box-shadow: 0 5px 15px rgba(183, 110, 121, 0.3);
+    background: var(--rose-gold); 
+    color: white; 
+    font-weight: 700; 
+    border-color: var(--rose-gold);
+    box-shadow: 0 5px 15px rgba(183, 110, 121, 0.4);
+    transform: scale(1.05);
 }
 
-.slot-btn:disabled { opacity: 0.2; cursor: not-allowed; background: #1a1a1a; text-decoration: line-through; }
-
-
-/* --- NOVOS ESTILOS (LAYOUT TIPO SALONSOFT) --- */
-
-/* Controle de Telas (Views) */
-.view-section { display: none; animation: fadeIn 0.5s; width: 100%; }
-.view-section.active { display: block; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-/* Header de Navegação (Seta Voltar) */
-.nav-header { display: flex; align-items: center; margin-bottom: 20px; }
-.back-btn { background: none; border: none; color: var(--gold-primary); font-size: 1.2rem; cursor: pointer; margin-right: 15px; }
-
-/* Lista de Serviços (Cards) */
-.service-card {
-    background: #252525;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: 1px solid #333;
-    transition: transform 0.2s ease;
-}
-.service-card:hover { border-color: var(--gold-primary); transform: translateX(2px); }
-
-.service-info h4 { color: var(--gold-primary); margin-bottom: 5px; font-size: 1rem; }
-.service-info p { color: #aaa; font-size: 0.85rem; margin-bottom: 2px;}
-.service-price { color: #fff; font-weight: bold; margin-top: 5px; }
-
-/* Calendário Horizontal */
-.calendar-strip {
-    display: flex;
-    overflow-x: auto;
-    gap: 10px;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-    /* Estilização da barra de rolagem */
-    scrollbar-width: thin; /* Firefox */
-    scrollbar-color: var(--gold-primary) #222;
+.slot-btn:disabled { 
+    opacity: 0.3; cursor: not-allowed; text-decoration: line-through; border-color: transparent;
 }
 
-.calendar-strip::-webkit-scrollbar { height: 6px; }
-.calendar-strip::-webkit-scrollbar-track { background: #222; border-radius: 10px; }
-.calendar-strip::-webkit-scrollbar-thumb { background-color: var(--gold-primary); border-radius: 10px; }
+/* --- FEEDBACK --- */
+#message, #loginMsg { margin-top: 25px; text-align: center; font-size: 0.9rem; letter-spacing: 0.5px; }
+.error { color: #ff6b6b; text-shadow: 0 0 10px rgba(255, 107, 107, 0.2); }
+.success { color: #69f0ae; text-shadow: 0 0 10px rgba(105, 240, 174, 0.2); }
 
-.date-card {
-    min-width: 70px;
-    background: #252525;
-    border: 1px solid #333;
-    border-radius: 8px;
-    padding: 10px 5px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    flex-shrink: 0; /* Impede que os cards encolham */
-}
-
-.date-card span.day { font-size: 0.8rem; color: #aaa; text-transform: uppercase; margin-bottom: 5px; display: block; }
-.date-card span.date { font-size: 1.2rem; font-weight: bold; color: #fff; }
-
-.date-card:hover { border-color: var(--gold-primary); background: rgba(183, 110, 121, 0.1); }
-.date-card.selected { background: var(--gold-gradient); border-color: transparent; }
-.date-card.selected span.day, .date-card.selected span.date { color: #121212; font-weight: bold; }
-
-
-/* --- ESTILOS DO ADMIN (Mantidos para compatibilidade) --- */
+/* --- ADMIN PANEL (Cards) --- */
 #login-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: var(--bg-dark); z-index: 1000;
-    display: flex; justify-content: center; align-items: center; flex-direction: column;
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(10px);
 }
 
 .tab-nav {
-    display: flex; justify-content: center; gap: 15px; margin-bottom: 30px;
-    border-bottom: 1px solid rgba(183, 110, 121, 0.2); padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
+
 .tab-btn {
-    background: transparent; border: none; color: var(--text-muted); font-size: 1.1rem;
-    cursor: pointer; padding: 10px 20px; transition: all 0.3s; font-family: 'Playfair Display', serif;
+    font-family: 'Playfair Display', serif;
+    letter-spacing: 1px;
+    opacity: 0.6;
 }
-.tab-btn:hover { color: var(--gold-primary); }
-.tab-btn.active { color: var(--gold-primary); border-bottom: 2px solid var(--gold-primary); }
-
-.tab-content { display: none; animation: fadeIn 0.5s; }
-.tab-content.active { display: block; }
-
-.dashboard-controls { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
-.dashboard-controls input { flex: 1; min-width: 200px; }
-.dashboard-controls button { flex: 1; background: #333; color: white; border: 1px solid #444; }
-.dashboard-controls button:hover { background: var(--gold-primary); color: #121212; }
-
-.list-container { display: flex; flex-direction: column; gap: 15px; }
+.tab-btn:hover { opacity: 1; }
+.tab-btn.active { 
+    color: var(--rose-gold); 
+    opacity: 1;
+    border-bottom: 2px solid var(--rose-gold); 
+}
 
 .admin-card {
-    background: #252525; padding: 20px; border-radius: 12px;
-    border-left: 4px solid var(--gold-primary);
-    display: flex; justify-content: space-between; align-items: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.2s;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 25px;
+    border-radius: 16px;
+    border-left: 3px solid var(--rose-gold);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: var(--ease-smooth);
+    margin-bottom: 10px;
+    border-top: 1px solid rgba(255,255,255,0.05);
 }
-.admin-card:hover { transform: translateX(5px); background: #2a2a2a; }
 
-.card-info h3 { color: var(--text-main); font-size: 1.1rem; margin-bottom: 5px; }
-.card-info p { color: var(--text-muted); font-size: 0.9rem; }
-.card-info .highlight { color: var(--gold-primary); font-weight: bold; }
+.admin-card:hover { 
+    transform: translateX(8px); 
+    background: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
 
 .btn-delete {
-    background: transparent; border: 1px solid var(--error); color: var(--error);
-    width: 40px; height: 40px; border-radius: 50%;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: all 0.3s;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 77, 77, 0.3);
+    color: #ff4d4d;
+    transition: var(--ease-smooth);
 }
-.btn-delete:hover { background: var(--error); color: white; }
-
-.add-service-box {
-    background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 10px;
-    margin-bottom: 25px; border: 1px dashed var(--gold-primary);
+.btn-delete:hover {
+    background: #ff4d4d;
+    color: white;
+    transform: rotate(90deg);
 }
-.add-row { display: flex; gap: 10px; align-items: flex-end; }
-.add-row .form-group { margin-bottom: 0; flex: 1; }
-.add-row button { margin-top: 0; }
 
+/* Controles Admin */
+.admin-controls { display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 30px; }
+.admin-controls button {
+    background: #222;
+    color: #fff;
+    border: 1px solid #333;
+    flex: 1;
+    transition: var(--ease-smooth);
+}
+.admin-controls button:hover {
+    border-color: var(--rose-gold);
+    color: var(--rose-gold);
+}
+
+/* Responsividade */
 @media (max-width: 600px) {
-    .container { padding: 30px 20px; }
-    .add-row { flex-direction: column; }
-    .add-row button { width: 100%; margin-top: 10px; }
-    .admin-card { flex-direction: column; text-align: center; gap: 15px; }
+    .container { padding: 30px 20px; border-radius: 0; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; border: none; }
     .slots-container { grid-template-columns: repeat(3, 1fr); }
+    .admin-controls { flex-direction: column; }
+    .admin-card { flex-direction: column; text-align: center; gap: 15px; }
+    header h1 { font-size: 2.2rem; }
 }
