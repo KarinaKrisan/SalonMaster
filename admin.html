@@ -3,119 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lumière | Painel Administrativo</title>
+    <title>Painel Administrativo | Lumière</title>
     
     <link rel="stylesheet" href="style.css">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        /* Ajustes do Admin */
+        #login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-dark); z-index: 2000;
+            display: flex; justify-content: center; align-items: center; flex-direction: column;
+        }
+        #adminPanel { display: none; }
+        
+        .tab-nav { display: flex; justify-content: center; gap: 20px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .tab-btn { background: none; border: none; color: #777; font-size: 1.1rem; cursor: pointer; padding-bottom: 5px; }
+        .tab-btn.active { color: var(--gold-primary); border-bottom: 2px solid var(--gold-primary); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .admin-controls { display: flex; gap: 10px; margin-bottom: 20px; }
+        .list-container { display: flex; flex-direction: column; gap: 10px; }
+        .admin-card { background: #252525; padding: 15px; border-radius: 8px; border-left: 4px solid var(--gold-primary); display: flex; justify-content: space-between; align-items: center; }
+        .btn-delete { color: var(--error); border: 1px solid var(--error); background: none; border-radius: 5px; cursor: pointer; padding: 5px 10px; }
+        
+        /* Ajustes Mobile */
+        @media(max-width:600px){ .admin-controls { flex-direction: column; } }
+    </style>
 </head>
 <body>
 
     <div id="login-overlay">
         <div class="container" style="max-width: 400px; text-align: center;">
-            <header>
-                <h1>Lumière</h1>
-                <p>Acesso Restrito</p>
-            </header>
+            <h2 style="color: var(--gold-primary); margin-bottom: 10px;">Área Restrita</h2>
+            <p style="color: #777; font-size: 0.9rem; margin-bottom: 20px;">Acesso via Firebase Auth</p>
             
             <div class="form-group">
-                <input type="text" id="adminUser" placeholder="Usuário" style="margin-bottom: 10px; text-align: center;">
+                <input type="email" id="adminEmail" placeholder="E-mail">
             </div>
             <div class="form-group">
-                <input type="password" id="adminPassword" placeholder="Senha" style="margin-bottom: 15px; text-align: center;">
+                <input type="password" id="adminPass" placeholder="Senha">
             </div>
             
-            <button class="cta-btn" id="btnLogin" onclick="checkLogin()">Entrar</button>
-            <p id="loginError" class="error" style="margin-top: 10px;"></p>
+            <button class="cta-btn" id="btnLogin" onclick="login()">Entrar</button>
+            <p id="loginMsg" style="margin-top: 15px; color: var(--error); font-size: 0.9rem;"></p>
         </div>
     </div>
 
-    <div class="container admin-container" id="adminPanel" style="display: none;">
-        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <div style="text-align: left;">
+    <div class="container admin-container" id="adminPanel">
+        <header style="justify-content: space-between; border: none;">
+            <div>
                 <h1>Gestão</h1>
-                <p>Agenda Lumière</p>
-                <small id="adminWelcome" style="color: var(--gold-primary); font-size: 0.8rem;"></small>
+                <p id="welcomeMsg" style="color: var(--gold-primary); font-weight: bold;">Carregando...</p>
             </div>
-            <button onclick="logout()" style="background:none; border:none; color: var(--text-muted); cursor: pointer; font-size: 1rem;">
+            <button onclick="logout()" style="background:none; border:none; color:#777; cursor:pointer;">
                 <i class="fas fa-sign-out-alt"></i> Sair
             </button>
         </header>
 
-        <nav class="tab-nav">
-            <button class="tab-btn active" onclick="switchTab('agenda')">Agendamentos</button>
-            <button class="tab-btn" onclick="switchTab('servicos')">Serviços</button>
-            <button class="tab-btn" onclick="switchTab('equipe')">Equipe</button>
-        </nav>
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="openTab('agenda')">Agenda</button>
+            <button class="tab-btn" onclick="openTab('servicos')">Serviços</button>
+            <button class="tab-btn" onclick="openTab('equipe')">Equipe</button>
+        </div>
 
         <div id="tab-agenda" class="tab-content active">
-            <div class="dashboard-controls">
+            <div class="admin-controls">
                 <input type="date" id="filterDate" onchange="loadAppointments()">
-                <button class="cta-btn" onclick="loadAppointments()" style="max-width: 150px;">
-                    <i class="fas fa-sync-alt"></i> Atualizar
-                </button>
+                <button class="cta-btn" onclick="loadAppointments()" style="width: auto;">Atualizar</button>
             </div>
-
-            <div id="loading-agenda" style="text-align: center; display: none; color: var(--gold-primary);">
-                <i class="fas fa-circle-notch fa-spin fa-2x"></i>
-            </div>
-
-            <div id="appointmentsList" class="list-container"></div>
+            <div id="agendaList" class="list-container">Carregando...</div>
         </div>
 
         <div id="tab-servicos" class="tab-content">
-            <div class="add-service-box">
-                <h3 style="color: var(--text-main); margin-bottom: 15px; font-size: 1.2rem;">Novo Procedimento</h3>
-                <form id="addServiceForm" class="add-row">
-                    <div class="form-group">
-                        <label>Nome</label>
-                        <input type="text" id="newServiceName" placeholder="Ex: Corte" required>
-                    </div>
-                    <div class="form-group" style="max-width: 150px;">
-                        <label>Duração (min)</label>
-                        <input type="number" id="newServiceDuration" placeholder="60" required min="10">
-                    </div>
-                    <button type="submit" class="cta-btn" style="max-width: 150px;">
-                        <i class="fas fa-plus"></i> Salvar
-                    </button>
-                </form>
+            <div class="container" style="padding: 15px; border: 1px dashed var(--gold-primary); margin-bottom: 20px; box-shadow: none;">
+                <h4 style="color:white; margin-bottom:10px;">Adicionar Serviço</h4>
+                <div style="display:flex; gap:10px; flex-wrap: wrap;">
+                    <input type="text" id="newServName" placeholder="Nome">
+                    <input type="number" id="newServDur" placeholder="Min" style="width: 70px;">
+                    <input type="number" id="newServPrice" placeholder="R$" style="width: 70px;">
+                    <button class="cta-btn" onclick="addService()" style="width: auto; margin:0;">+</button>
+                </div>
             </div>
-            <div id="loading-services" style="text-align: center; display: none; color: var(--gold-primary);">
-                <i class="fas fa-circle-notch fa-spin fa-2x"></i>
-            </div>
-            <div id="servicesList" class="list-container"></div>
+            <div id="servicosList" class="list-container"></div>
         </div>
 
         <div id="tab-equipe" class="tab-content">
-            <div class="add-service-box">
-                <h3 style="color: var(--text-main); margin-bottom: 15px; font-size: 1.2rem;">Novo Profissional</h3>
-                <form id="addTeamForm" class="add-row">
-                    <div class="form-group">
-                        <label>Nome</label>
-                        <input type="text" id="newTeamName" placeholder="Ex: Ana Souza" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Especialidade</label>
-                        <input type="text" id="newTeamRole" placeholder="Ex: Hair Stylist" required>
-                    </div>
-                    <button type="submit" class="cta-btn" style="max-width: 150px;">
-                        <i class="fas fa-plus"></i> Salvar
-                    </button>
-                </form>
+            <div class="container" style="padding: 15px; border: 1px dashed var(--gold-primary); margin-bottom: 20px; box-shadow: none;">
+                <h4 style="color:white; margin-bottom:10px;">Adicionar Profissional</h4>
+                <div style="display:flex; gap:10px; flex-wrap: wrap;">
+                    <input type="text" id="newProfName" placeholder="Nome">
+                    <input type="text" id="newProfRole" placeholder="Especialidade">
+                    <button class="cta-btn" onclick="addProf()" style="width: auto; margin:0;">+</button>
+                </div>
             </div>
-            <div id="loading-team" style="text-align: center; display: none; color: var(--gold-primary);">
-                <i class="fas fa-circle-notch fa-spin fa-2x"></i>
-            </div>
-            <div id="teamList" class="list-container"></div>
+            <div id="equipeList" class="list-container"></div>
         </div>
-
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, query, where, orderBy, getDocs, deleteDoc, addDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        // Importamos AUTH e FIRESTORE
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, query, where, getDocs, deleteDoc, doc, addDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // --- CONFIGURAÇÃO ---
         const firebaseConfig = {
             apiKey: "AIzaSyCICXCU3bgxoVK4kAXncxSWZHAazKFS65s",
             authDomain: "agenda-salao-bbddf.firebaseapp.com",
@@ -127,235 +119,190 @@
         };
 
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app); // Inicializa Auth
         const db = getFirestore(app);
 
-        // --- SISTEMA DE LOGIN SEGURO ---
+        // --- SISTEMA DE LOGIN (AUTH + FIRESTORE) ---
 
-        // 1. Verificar se já está logado ao abrir a página
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedUser = localStorage.getItem('lumiere_admin_user');
-            if(savedUser) {
-                showPanel(savedUser);
+        // Monitora se o usuário já está logado (Persistência automática do Firebase)
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // Usuário está logado no Auth, agora verificamos se é Admin no Firestore
+                checkAdminRole(user.email);
+            } else {
+                // Ninguém logado
+                document.getElementById('login-overlay').style.display = 'flex';
+                document.getElementById('adminPanel').style.display = 'none';
             }
         });
 
-        // 2. Função de Login conectada ao Banco
-        window.checkLogin = async () => {
-            const user = document.getElementById('adminUser').value;
-            const pass = document.getElementById('adminPassword').value;
+        window.login = async () => {
+            const email = document.getElementById('adminEmail').value;
+            const pass = document.getElementById('adminPass').value;
+            const msg = document.getElementById('loginMsg');
             const btn = document.getElementById('btnLogin');
-            const errorMsg = document.getElementById('loginError');
 
-            if(!user || !pass) {
-                errorMsg.textContent = "Preencha todos os campos.";
+            if(!email || !pass) {
+                msg.textContent = "Preencha todos os campos.";
                 return;
             }
 
-            // Efeito visual de carregamento
-            btn.disabled = true;
             btn.textContent = "Verificando...";
-            errorMsg.textContent = "";
+            btn.disabled = true;
 
             try {
-                // Busca na coleção 'administradores' se existe esse par usuario/senha
-                const q = query(
-                    collection(db, "administradores"),
-                    where("usuario", "==", user),
-                    where("senha", "==", pass)
-                );
-
-                const querySnapshot = await getDocs(q);
-
-                if (!querySnapshot.empty) {
-                    // SUCESSO!
-                    localStorage.setItem('lumiere_admin_user', user); // Salva sessão
-                    showPanel(user);
-                } else {
-                    // FALHA
-                    errorMsg.textContent = "Usuário ou senha incorretos.";
-                }
-
-            } catch (error) {
-                console.error("Erro login:", error);
-                errorMsg.textContent = "Erro de conexão. Verifique o console.";
-            } finally {
+                // 1. Tenta logar no Authentication (Verifica senha real)
+                await signInWithEmailAndPassword(auth, email, pass);
+                // Se der certo, o onAuthStateChanged lá em cima vai disparar
+                
+            } catch(error) {
+                console.error(error);
+                let text = "Erro ao entrar.";
+                if(error.code === 'auth/invalid-credential') text = "E-mail ou senha incorretos.";
+                msg.textContent = text;
                 btn.disabled = false;
                 btn.textContent = "Entrar";
             }
-        };
-
-        // 3. Exibir o painel e carregar dados
-        function showPanel(userName) {
-            document.getElementById('login-overlay').style.display = 'none';
-            document.getElementById('adminPanel').style.display = 'block';
-            document.getElementById('adminWelcome').textContent = `Olá, ${userName}`;
-            loadAppointments(); // Carrega a aba padrão
         }
 
-        // 4. Logout
+        async function checkAdminRole(email) {
+            // 2. Segurança Extra: Verifica na coleção 'administradores' se esse email tem permissão
+            try {
+                const q = query(collection(db, "administradores"), where("email", "==", email));
+                const snap = await getDocs(q);
+
+                if(!snap.empty) {
+                    const data = snap.docs[0].data();
+                    
+                    if(data.role === 'admin') {
+                        // SUCESSO TOTAL
+                        showPanel(data.name); // Ex: Karina Krisan
+                    } else {
+                        throw new Error("Sem permissão de admin.");
+                    }
+                } else {
+                    throw new Error("Usuário não cadastrado como admin.");
+                }
+            } catch (e) {
+                console.error(e);
+                alert("Acesso negado: " + e.message);
+                signOut(auth); // Desloga se não for admin
+            }
+        }
+
         window.logout = () => {
-            localStorage.removeItem('lumiere_admin_user');
-            location.reload();
-        };
+            signOut(auth).then(() => location.reload());
+        }
 
-        // --- NAVEGAÇÃO DE ABAS ---
-        window.switchTab = (tabName) => {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        function showPanel(name) {
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+            document.getElementById('welcomeMsg').textContent = `Olá, ${name}`;
             
-            document.getElementById(`tab-${tabName}`).classList.add('active');
-            
-            const buttons = document.querySelectorAll('.tab-btn');
-            if(tabName === 'agenda') buttons[0].classList.add('active');
-            if(tabName === 'servicos') buttons[1].classList.add('active');
-            if(tabName === 'equipe') buttons[2].classList.add('active');
+            // Inicia dados
+            document.getElementById('filterDate').value = new Date().toISOString().split('T')[0];
+            loadAppointments();
+        }
 
-            if(tabName === 'servicos') loadServicesList();
-            if(tabName === 'equipe') loadTeamList();
-        };
+        // --- NAVEGAÇÃO ---
+        window.openTab = (tabName) => {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-'+tabName).classList.add('active');
+            event.target.classList.add('active');
+            if(tabName === 'servicos') loadServices();
+            if(tabName === 'equipe') loadTeam();
+        }
 
         // --- 1. AGENDA ---
-        const filterDateInput = document.getElementById('filterDate');
-        filterDateInput.value = new Date().toISOString().split("T")[0];
-
         window.loadAppointments = async () => {
-            const listElement = document.getElementById('appointmentsList');
-            const loader = document.getElementById('loading-agenda');
-            const dateVal = filterDateInput.value;
-
-            listElement.innerHTML = '';
-            loader.style.display = 'block';
+            const date = document.getElementById('filterDate').value;
+            const list = document.getElementById('agendaList');
+            list.innerHTML = '<p style="color:#777; text-align:center;">Carregando...</p>';
 
             try {
-                const q = query(collection(db, "agendamentos"), where("data", "==", dateVal), orderBy("hora"));
-                const querySnapshot = await getDocs(q);
+                const q = query(collection(db, "agendamentos"), where("data", "==", date), orderBy("hora"));
+                const snap = await getDocs(q);
 
-                if (querySnapshot.empty) {
-                    listElement.innerHTML = `<div style="text-align:center; padding: 20px; color:#777;">Nenhum agendamento.</div>`;
-                } else {
-                    querySnapshot.forEach((docSnap) => {
-                        const data = docSnap.data();
-                        const card = document.createElement('div');
-                        card.className = 'admin-card';
-                        card.innerHTML = `
-                            <div class="card-info">
-                                <h3><i class="far fa-clock"></i> ${data.hora} - ${data.cliente}</h3>
-                                <p><span class="highlight">${data.servico}</span> com ${capitalize(data.profissional)}</p>
-                                <p><i class="fab fa-whatsapp"></i> ${data.telefone}</p>
-                            </div>
-                            <button class="btn-delete" onclick="deleteItem('agendamentos', '${docSnap.id}', 'o agendamento')" title="Cancelar">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        `;
-                        listElement.appendChild(card);
-                    });
+                list.innerHTML = '';
+                if(snap.empty) {
+                    list.innerHTML = '<p style="color:#777; text-align:center; padding:20px;">Nenhum agendamento.</p>';
+                    return;
                 }
-            } catch (error) { console.error(error); listElement.innerHTML = `<p class="error">Erro ao carregar agenda.</p>`; } finally { loader.style.display = 'none'; }
-        };
+
+                snap.forEach(d => {
+                    const data = d.data();
+                    const div = document.createElement('div');
+                    div.className = 'admin-card';
+                    div.innerHTML = `
+                        <div>
+                            <strong style="color:var(--gold-primary)">${data.hora}</strong> - ${data.cliente}
+                            <div style="font-size:0.8rem; color:#aaa;">${data.servico} (${data.profissional})</div>
+                        </div>
+                        <button class="btn-delete" onclick="deleteItem('agendamentos', '${d.id}')"><i class="fas fa-trash"></i></button>
+                    `;
+                    list.appendChild(div);
+                });
+            } catch(e) { console.error(e); }
+        }
 
         // --- 2. SERVIÇOS ---
-        window.loadServicesList = async () => {
-            const listElement = document.getElementById('servicesList');
-            const loader = document.getElementById('loading-services');
-            listElement.innerHTML = '';
-            loader.style.display = 'block';
-
-            try {
-                const q = query(collection(db, "procedimentos"), orderBy("nome"));
-                const querySnapshot = await getDocs(q);
-                if (querySnapshot.empty) { listElement.innerHTML = `<div style="text-align:center; padding: 20px; color:#777;">Nenhum serviço.</div>`; } 
-                else {
-                    querySnapshot.forEach((docSnap) => {
-                        const data = docSnap.data();
-                        const card = document.createElement('div');
-                        card.className = 'admin-card';
-                        card.innerHTML = `
-                            <div class="card-info">
-                                <h3>${data.nome}</h3>
-                                <p><i class="far fa-hourglass"></i> ${data.duracao} min</p>
-                            </div>
-                            <button class="btn-delete" onclick="deleteItem('procedimentos', '${docSnap.id}', 'o serviço')">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        `;
-                        listElement.appendChild(card);
-                    });
-                }
-            } catch (error) { console.error(error); } finally { loader.style.display = 'none'; }
-        };
-
-        document.getElementById('addServiceForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const nome = document.getElementById('newServiceName').value;
-            const duracao = parseInt(document.getElementById('newServiceDuration').value);
-            const btn = e.target.querySelector('button');
-            btn.disabled = true;
-            try {
-                await addDoc(collection(db, "procedimentos"), { nome, duracao });
-                alert("Salvo!");
-                document.getElementById('addServiceForm').reset();
-                loadServicesList();
-            } catch (error) { alert("Erro ao salvar."); } finally { btn.disabled = false; }
-        });
+        window.loadServices = async () => {
+            const list = document.getElementById('servicosList');
+            const q = query(collection(db, "procedimentos"), orderBy("nome"));
+            const snap = await getDocs(q);
+            list.innerHTML = '';
+            snap.forEach(d => {
+                const data = d.data();
+                divFactory(list, `<strong>${data.nome}</strong> (${data.duracao} min) - R$ ${data.preco||0}`, 'procedimentos', d.id);
+            });
+        }
+        window.addService = async () => {
+            const nome = document.getElementById('newServName').value;
+            const dur = document.getElementById('newServDur').value;
+            const preco = document.getElementById('newServPrice').value;
+            if(!nome) return;
+            await addDoc(collection(db, "procedimentos"), { nome, duracao: parseInt(dur), preco: parseInt(preco||0) });
+            loadServices();
+            document.getElementById('newServName').value = '';
+        }
 
         // --- 3. EQUIPE ---
-        window.loadTeamList = async () => {
-            const listElement = document.getElementById('teamList');
-            const loader = document.getElementById('loading-team');
-            listElement.innerHTML = '';
-            loader.style.display = 'block';
+        window.loadTeam = async () => {
+            const list = document.getElementById('equipeList');
+            const q = query(collection(db, "profissionais"), orderBy("nome"));
+            const snap = await getDocs(q);
+            list.innerHTML = '';
+            snap.forEach(d => {
+                const data = d.data();
+                divFactory(list, `<strong>${data.nome}</strong> - ${data.especialidade}`, 'profissionais', d.id);
+            });
+        }
+        window.addProf = async () => {
+            const nome = document.getElementById('newProfName').value;
+            const role = document.getElementById('newProfRole').value;
+            if(!nome) return;
+            await addDoc(collection(db, "profissionais"), { nome, especialidade: role });
+            loadTeam();
+            document.getElementById('newProfName').value = '';
+        }
 
-            try {
-                const q = query(collection(db, "profissionais"), orderBy("nome"));
-                const querySnapshot = await getDocs(q);
-                if (querySnapshot.empty) { listElement.innerHTML = `<div style="text-align:center; padding: 20px; color:#777;">Nenhum profissional.</div>`; }
-                else {
-                    querySnapshot.forEach((docSnap) => {
-                        const data = docSnap.data();
-                        const card = document.createElement('div');
-                        card.className = 'admin-card';
-                        card.innerHTML = `
-                            <div class="card-info">
-                                <h3>${data.nome}</h3>
-                                <p><i class="fas fa-id-badge"></i> ${data.especialidade}</p>
-                            </div>
-                            <button class="btn-delete" onclick="deleteItem('profissionais', '${docSnap.id}', 'o profissional')">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        `;
-                        listElement.appendChild(card);
-                    });
-                }
-            } catch (error) { console.error(error); } finally { loader.style.display = 'none'; }
-        };
+        // Helpers
+        function divFactory(container, html, col, id) {
+            const div = document.createElement('div');
+            div.className = 'admin-card';
+            div.innerHTML = `<div>${html}</div><button class="btn-delete" onclick="deleteItem('${col}', '${id}')"><i class="fas fa-trash"></i></button>`;
+            container.appendChild(div);
+        }
 
-        document.getElementById('addTeamForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const nome = document.getElementById('newTeamName').value;
-            const especialidade = document.getElementById('newTeamRole').value;
-            const btn = e.target.querySelector('button');
-            btn.disabled = true;
-            try {
-                await addDoc(collection(db, "profissionais"), { nome, especialidade });
-                alert("Profissional adicionado!");
-                document.getElementById('addTeamForm').reset();
-                loadTeamList();
-            } catch (error) { alert("Erro ao salvar."); } finally { btn.disabled = false; }
-        });
-
-        // --- DELETAR GLOBAL ---
-        window.deleteItem = async (collectionName, id, itemName) => {
-            if(confirm(`Excluir ${itemName}?`)) {
-                try {
-                    await deleteDoc(doc(db, collectionName, id));
-                    if(collectionName === 'agendamentos') loadAppointments();
-                    if(collectionName === 'procedimentos') loadServicesList();
-                    if(collectionName === 'profissionais') loadTeamList();
-                } catch (error) { alert("Erro ao excluir."); }
+        window.deleteItem = async (col, id) => {
+            if(confirm('Excluir?')) {
+                await deleteDoc(doc(db, col, id));
+                if(col === 'agendamentos') loadAppointments();
+                if(col === 'procedimentos') loadServices();
+                if(col === 'profissionais') loadTeam();
             }
-        };
-
-        function capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : ''; }
+        }
     </script>
 </body>
 </html>
